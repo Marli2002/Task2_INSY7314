@@ -3,20 +3,24 @@
   "WorkspaceRootPath": "C:\\Task2_INSY7314\\backend\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Task2_INSY7314\\backend\\routes\\auth.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:routes\\auth.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Task2_INSY7314\\backend\\middleware\\auth.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:middleware\\auth.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Task2_INSY7314\\backend\\controllers\\authController.js||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:controllers\\authController.js||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Task2_INSY7314\\backend\\models\\User.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:models\\User.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Task2_INSY7314\\backend\\models\\TokenBlacklist.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:models\\TokenBlacklist.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Task2_INSY7314\\backend\\middleware\\auth.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:middleware\\auth.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Task2_INSY7314\\backend\\routes\\auth.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:routes\\auth.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Task2_INSY7314\\backend\\models\\User.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:models\\User.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Task2_INSY7314\\backend\\server.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
@@ -42,24 +46,37 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
+              "Title": "TokenBlacklist.js",
+              "DocumentMoniker": "C:\\Task2_INSY7314\\backend\\models\\TokenBlacklist.js",
+              "RelativeDocumentMoniker": "models\\TokenBlacklist.js",
+              "ToolTip": "C:\\Task2_INSY7314\\backend\\models\\TokenBlacklist.js",
+              "RelativeToolTip": "models\\TokenBlacklist.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-10-06T12:07:27.344Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
               "Title": "auth.js",
               "DocumentMoniker": "C:\\Task2_INSY7314\\backend\\middleware\\auth.js",
               "RelativeDocumentMoniker": "middleware\\auth.js",
               "ToolTip": "C:\\Task2_INSY7314\\backend\\middleware\\auth.js",
               "RelativeToolTip": "middleware\\auth.js",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAA+AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
               "WhenOpened": "2025-10-06T10:01:41.081Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "User.js",
               "DocumentMoniker": "C:\\Task2_INSY7314\\backend\\models\\User.js",
               "RelativeDocumentMoniker": "models\\User.js",
@@ -67,12 +84,11 @@
               "RelativeToolTip": "models\\User.js",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-10-06T10:00:34.663Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-06T10:00:34.663Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "server.js",
               "DocumentMoniker": "C:\\Task2_INSY7314\\backend\\server.js",
               "RelativeDocumentMoniker": "server.js",
@@ -80,18 +96,17 @@
               "RelativeToolTip": "server.js",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAADEAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-10-06T09:53:45.374Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-06T09:53:45.374Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "auth.js",
               "DocumentMoniker": "C:\\Task2_INSY7314\\backend\\routes\\auth.js",
               "RelativeDocumentMoniker": "routes\\auth.js",
               "ToolTip": "C:\\Task2_INSY7314\\backend\\routes\\auth.js",
               "RelativeToolTip": "routes\\auth.js",
-              "ViewState": "AgIAAB4AAAAAAAAAAAAgwD0AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAFUAAAAAAAAAAAAAAFUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
               "WhenOpened": "2025-10-06T09:38:55.081Z",
               "EditorCaption": ""
@@ -104,14 +119,14 @@
               "RelativeDocumentMoniker": "controllers\\authController.js",
               "ToolTip": "C:\\Task2_INSY7314\\backend\\controllers\\authController.js",
               "RelativeToolTip": "controllers\\authController.js",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACQAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAADYAAAAAAAAAAAAAABcAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
               "WhenOpened": "2025-10-06T09:37:55.967Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "db.js",
               "DocumentMoniker": "C:\\Task2_INSY7314\\backend\\config\\db.js",
               "RelativeDocumentMoniker": "config\\db.js",
@@ -119,12 +134,11 @@
               "RelativeToolTip": "config\\db.js",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-10-06T09:15:26.866Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-06T09:15:26.866Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": ".env",
               "DocumentMoniker": "C:\\Task2_INSY7314\\backend\\.env",
               "RelativeDocumentMoniker": ".env",
@@ -132,12 +146,11 @@
               "RelativeToolTip": ".env",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2025-10-06T09:11:44.44Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-06T09:11:44.44Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "package.json",
               "DocumentMoniker": "C:\\Task2_INSY7314\\backend\\package.json",
               "RelativeDocumentMoniker": "package.json",
@@ -145,8 +158,7 @@
               "RelativeToolTip": "package.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-10-06T08:43:08.256Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-06T08:43:08.256Z"
             }
           ]
         }

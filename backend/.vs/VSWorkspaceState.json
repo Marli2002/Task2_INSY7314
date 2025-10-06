@@ -9,6 +9,6 @@
     "\\routes",
     "\\src"
   ],
-  "SelectedNode": "\\routes\\auth.js",
+  "SelectedNode": "\\middleware\\auth.js",
   "PreviewInSolutionExplorer": false
 }

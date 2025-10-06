@@ -3,13 +3,14 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const TokenBlacklist = require('../models/TokenBlacklist'); // ?? new import
+const authMiddleware = require('../middleware/auth'); // ?? for protected logout route
 
 // REGISTER
 router.post('/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
 
-        // Input validation (basic)
         if (!username || !email || !password) {
             return res.status(400).json({ msg: 'Please enter all fields' });
         }
@@ -19,7 +20,6 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ msg: 'User already exists' });
         }
 
-        // Salt & hash password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -40,7 +40,6 @@ router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Input validation
         if (!email || !password) return res.status(400).json({ msg: 'Please enter all fields' });
 
         const user = await User.findOne({ email });
@@ -52,6 +51,31 @@ router.post('/login', async (req, res) => {
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.json({ token, user: { id: user._id, username: user.username, email } });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
+
+// LOGOUT (with blacklist)
+router.post('/logout', authMiddleware, async (req, res) => {
+    try {
+        const token = req.header('x-auth-token');
+        if (!token) return res.status(400).json({ msg: 'No token provided' });
+
+        // Decode token to get expiration
+        const decoded = jwt.decode(token);
+        if (!decoded || !decoded.exp) {
+            return res.status(400).json({ msg: 'Invalid token' });
+        }
+
+        // Add token to blacklist with expiry time
+        await TokenBlacklist.create({
+            token,
+            expiresAt: new Date(decoded.exp * 1000),
+        });
+
+        res.json({ msg: 'Successfully logged out' });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');
