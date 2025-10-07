@@ -1,49 +1,44 @@
-// src/components/LoginForm.jsx
-import React, { useState } from "react";
-import { loginUser } from "../api/auth";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import './Form.css';
 
 export default function LoginForm() {
-  const [formData, setFormData] = useState({ email: "", password: "" });
-  const [message, setMessage] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    try {
-      const res = await loginUser(formData);
-      localStorage.setItem("token", res.data.token);
-      setMessage("Login successful!");
-    } catch (err) {
-      setMessage(err.response?.data?.message || "Invalid credentials");
-    }
+    console.log("Logging in:", { username, password });
+    alert("Logged in successfully!");
+    navigate("/payments/create"); // redirect after login
   };
 
   return (
-    <div className="form-container">
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
-        <button type="submit">Login</button>
-      </form>
-      <p>{message}</p>
+    <div className="full-page">
+      <div className="form-container">
+        <h2>Login</h2>
+        <form onSubmit={handleSubmit}>
+          <label>Username</label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+          <label>Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button type="submit">Login</button>
+        </form>
+        <button className="secondary-btn" onClick={() => navigate("/register")}>
+          Register
+        </button>
+      </div>
     </div>
   );
 }

@@ -1,62 +1,44 @@
-
-import React, { useState } from "react";
-import { registerUser } from "../api/auth";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import './Form.css';
 
 export default function RegisterForm() {
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
-  });
-  const [message, setMessage] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    try {
-      const res = await registerUser(formData);
-      localStorage.setItem("token", res.data.token);
-      setMessage("Registration successful!");
-      setFormData({ username: "", email: "", password: "" });
-    } catch (err) {
-      setMessage(err.response?.data?.message || "Registration failed");
-    }
+    console.log("Registering:", { username, password });
+    alert("Registered successfully!");
+    navigate("/login");
   };
 
   return (
-    <div className="form-container">
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          value={formData.username}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
-        <button type="submit">Register</button>
-      </form>
-      <p>{message}</p>
+    <div className="full-page">
+      <div className="form-container">
+        <h2>Register</h2>
+        <form onSubmit={handleSubmit}>
+          <label>Username</label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+          <label>Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button type="submit">Register</button>
+        </form>
+        <button className="secondary-btn" onClick={() => navigate("/login")}>
+          Back to Login
+        </button>
+      </div>
     </div>
   );
 }

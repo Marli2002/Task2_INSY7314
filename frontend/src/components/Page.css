@@ -1,0 +1,65 @@
+body, html, #root {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #f9f9f9;
+}
+
+.page {
+  padding: 20px 50px;
+}
+
+.content-section {
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+  max-width: 700px;
+  margin: 40px auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.content-section h1 {
+  margin-bottom: 20px;
+  font-size: 2rem;
+  color: #004466;
+}
+
+.classic-form label {
+  display: block;
+  margin: 10px 0 5px;
+  font-weight: bold;
+}
+
+.classic-form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.classic-form button {
+  padding: 10px 25px;
+  border: none;
+  border-radius: 6px;
+  background-color: #004466;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.classic-form button:hover {
+  background-color: #006699;
+}
+
+.secondary-btn {
+  background-color: #888;
+  color: white;
+  margin-top: 15px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.secondary-btn:hover {
+  background-color: #555;
+}
