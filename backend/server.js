@@ -1,4 +1,4 @@
-// Load environment variables 
+// Load environment variables  
 require('dotenv').config();
 
 // Check if MONGO_URI is loaded
@@ -19,8 +19,9 @@ connectDB();
 // Initialize Express app
 const app = express();
 
-// Middlewares
-app.use(express.json());
+// Fixed: allow empty bodies without crashing
+app.use(express.json({ strict: false }));
+
 app.use(cors());
 app.use(helmet());
 
@@ -33,6 +34,7 @@ app.use(limiter);
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/payment', require('./routes/payment'));
 
 // SSL credentials
 const sslOptions = {
