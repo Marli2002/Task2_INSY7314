@@ -83,3 +83,23 @@ router.post('/logout', authMiddleware, async (req, res) => {
 });
 
 module.exports = router;
+
+/*
+References:
+
+bcrypt.js. (n.d.). *bcrypt.js documentation*. Retrieved October 9, 2025, 
+from https://www.npmjs.com/package/bcryptjs
+
+Express.js. (n.d.-a). *Express routing*. Express.js Documentation. 
+Retrieved October 9, 2025, from https://expressjs.com/en/guide/routing.html
+
+JSON Web Token. (n.d.). *jsonwebtoken documentation*. Retrieved October 9, 2025, 
+from https://www.npmjs.com/package/jsonwebtoken
+
+Mongoose. (n.d.-a). *Models*. Mongoose ODM Documentation. 
+Retrieved October 9, 2025, from https://mongoosejs.com/docs/models.html
+
+Mongoose. (n.d.-b). *Middleware*. Mongoose ODM Documentation. 
+Retrieved October 9, 2025, from https://mongoosejs.com/docs/middleware.html
+
+*/

@@ -55,3 +55,31 @@ const PORT = process.env.API_PORT || 5000;
 https.createServer(sslOptions, app).listen(PORT, () => {
     console.log(`Server running on https://localhost:${PORT}`);
 });
+
+/*
+References:
+
+CORS. (n.d.). *CORS middleware for Express*. npm Documentation. 
+Retrieved October 9, 2025, from https://www.npmjs.com/package/cors
+
+dotenv. (n.d.). *dotenv documentation*. npm Documentation. 
+Retrieved October 9, 2025, from https://www.npmjs.com/package/dotenv
+
+Express.js. (n.d.-a). *Express.js Guide: Middleware*. Express.js Documentation. 
+Retrieved October 9, 2025, from https://expressjs.com/en/guide/writing-middleware.html
+
+express-rate-limit. (n.d.). *Express rate-limit documentation*. npm Documentation. 
+Retrieved October 9, 2025, from https://www.npmjs.com/package/express-rate-limit
+
+helmet. (n.d.). *Helmet documentation*. npm Documentation. 
+Retrieved October 9, 2025, from https://www.npmjs.com/package/helmet
+
+MongoDB. (n.d.). *Connect to MongoDB using Node.js*. MongoDB Documentation. 
+Retrieved October 9, 2025, from https://www.mongodb.com/docs/manual/tutorial/getting-started/
+
+Node.js Foundation. (n.d.). *Node.js HTTPS module*. Node.js Documentation. 
+Retrieved October 9, 2025, from https://nodejs.org/api/https.html
+
+Node.js Foundation. (n.d.). *Node.js File System (fs) module*. Node.js Documentation. 
+Retrieved October 9, 2025, from https://nodejs.org/api/fs.html
+*/

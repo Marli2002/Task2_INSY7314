@@ -44,3 +44,22 @@ router.post('/', auth, validatePayment, createPayment);
 router.get('/', auth, getPayments);
 
 module.exports = router;
+
+/*
+References:
+Auth0. (n.d.). *Learn about JSON Web Tokens (JWT)*. Auth0 Documentation. 
+Retrieved October 9, 2025, from https://auth0.com/learn/json-web-tokens/
+
+Express.js. (n.d.-a). *Routing*. Express.js Documentation. 
+Retrieved October 9, 2025, from https://expressjs.com/en/guide/routing.html
+
+MDN Web Docs. (n.d.). *Regular expressions*. Mozilla Developer Network. 
+Retrieved October 9, 2025, from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+
+Mongoose. (n.d.-a). *Models*. Mongoose ODM Documentation. 
+Retrieved October 9, 2025, from https://mongoosejs.com/docs/models.html
+
+mongo-sanitize. (n.d.). *Prevent MongoDB operator injection*. npm Documentation. 
+Retrieved October 9, 2025, from https://www.npmjs.com/package/mongo-sanitize
+
+*/

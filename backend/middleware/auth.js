@@ -26,3 +26,28 @@ async function auth(req, res, next) {
 }
 
 module.exports = auth;
+
+/*
+References:
+
+Auth0. (n.d.). *Learn about JSON Web Tokens (JWT)*. Auth0 Documentation. 
+Retrieved October 9, 2025, from https://auth0.com/learn/json-web-tokens/
+
+Express.js. (n.d.-a). *Response methods*. Express. Retrieved October 9, 2025, from 
+https://expressjs.com/en/api.html#res
+
+Express.js. (n.d.-b). *Request object*. Express. Retrieved October 9, 2025, from 
+https://expressjs.com/en/api.html#req
+
+Mongoose. (n.d.-a). *Models*. Mongoose ODM Documentation. Retrieved October 9, 2025, from 
+https://mongoosejs.com/docs/models.html
+
+Mozilla Developer Network (MDN). (n.d.). *HTTP response status codes*. MDN Web Docs. 
+Retrieved October 9, 2025, from https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+
+Node.js Foundation. (n.d.). *Error handling*. Node.js Documentation. 
+Retrieved October 9, 2025, from https://nodejs.org/en/learn
+
+jsonwebtoken. (n.d.). *jsonwebtoken API documentation*. npm. 
+Retrieved October 9, 2025, from https://www.npmjs.com/package/jsonwebtoken
+*/
