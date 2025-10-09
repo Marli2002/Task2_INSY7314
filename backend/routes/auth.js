@@ -3,8 +3,8 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const TokenBlacklist = require('../models/TokenBlacklist'); // ?? new import
-const authMiddleware = require('../middleware/auth'); // ?? for protected logout route
+const TokenBlacklist = require('../models/TokenBlacklist'); 
+const authMiddleware = require('../middleware/auth');
 
 // REGISTER
 router.post('/register', async (req, res) => {

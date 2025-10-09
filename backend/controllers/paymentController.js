@@ -21,9 +21,13 @@ exports.createPayment = async (req, res) => {
 };
 
 // Get all payments for logged-in user
+// Get all payments for logged-in user
 exports.getPayments = async (req, res) => {
   try {
-    const payments = await Payment.find({ userId: req.user.id }).sort({ createdAt: -1 });
+    const payments = await Payment.find({ userId: req.user.id })
+      .sort({ createdAt: -1 })
+      .select('customerName amount paymentMethod status createdAt'); 
+
     res.status(200).json(payments);
   } catch (err) {
     console.error(err);

@@ -1,29 +1,54 @@
-import { useState } from "react";
+import { useState } from "react"; 
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import './Form.css';
 
 export default function LoginForm() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState(""); // changed from username
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Logging in:", { username, password });
-    alert("Logged in successfully!");
-    navigate("/payments/create"); // redirect after login
+    setError("");
+
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, {
+        email,
+        password
+      });
+
+      console.log("Logged in:", response.data);
+
+      // Save token and user info to localStorage
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+
+      alert("Logged in successfully!");
+      navigate("/payments/create"); // redirect after login
+
+    } catch (err) {
+      console.error(err);
+      if (err.response && err.response.data && err.response.data.msg) {
+        setError(err.response.data.msg);
+      } else {
+        setError("Login failed. Please try again.");
+      }
+    }
   };
 
   return (
     <div className="full-page">
       <div className="form-container">
         <h2>Login</h2>
+        {error && <p className="error-msg">{error}</p>}
         <form onSubmit={handleSubmit}>
-          <label>Username</label>
+          <label>Email</label>
           <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
           <label>Password</label>

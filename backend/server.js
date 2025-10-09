@@ -1,4 +1,4 @@
-// Load environment variables  
+// Load environment variables   
 require('dotenv').config();
 
 // Check if MONGO_URI is loaded
@@ -22,7 +22,13 @@ const app = express();
 // Fixed: allow empty bodies without crashing
 app.use(express.json({ strict: false }));
 
-app.use(cors());
+// CORS - allow only frontend to access backend
+app.use(cors({
+    origin: 'https://localhost:5173', // frontend URL
+    credentials: true
+}));
+
+// Security headers
 app.use(helmet());
 
 // Rate limiting
