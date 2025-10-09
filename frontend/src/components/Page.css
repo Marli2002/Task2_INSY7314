@@ -1,26 +1,19 @@
-body, html, #root {
-  margin: 0;
-  font-family: 'Arial', sans-serif;
+.page.full-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
   background-color: #f9f9f9;
 }
 
-.page {
-  padding: 20px 50px;
-}
-
-.content-section {
-  background-color: white;
+.form-section {
+  width: 100%;
+  max-width: 400px; /* smaller form width */
   padding: 30px;
   border-radius: 8px;
-  max-width: 700px;
-  margin: 40px auto;
+  background-color: white;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-.content-section h1 {
-  margin-bottom: 20px;
-  font-size: 2rem;
-  color: #004466;
 }
 
 .classic-form label {
@@ -29,22 +22,26 @@ body, html, #root {
   font-weight: bold;
 }
 
-.classic-form input {
+.classic-form input,
+.classic-form select {
   width: 100%;
   padding: 10px;
   margin-bottom: 15px;
   border: 1px solid #ccc;
   border-radius: 6px;
+  box-sizing: border-box;
 }
 
 .classic-form button {
-  padding: 10px 25px;
+  width: 100%;
+  padding: 12px 0;
   border: none;
   border-radius: 6px;
   background-color: #004466;
   color: white;
   font-weight: bold;
   cursor: pointer;
+  margin-top: 10px;
 }
 
 .classic-form button:hover {
@@ -52,9 +49,10 @@ body, html, #root {
 }
 
 .secondary-btn {
+  display: block;
   background-color: #888;
   color: white;
-  margin-top: 15px;
+  margin: 20px auto 0;
   padding: 10px 20px;
   border-radius: 6px;
   cursor: pointer;

@@ -1,34 +1,52 @@
-import { useState } from "react"; 
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { sanitizeEmail } from "../utils/sanitize";
 import './Form.css';
 
 export default function LoginForm() {
-  const [email, setEmail] = useState(""); 
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
+
+    // Sanitize email
+    const cleanEmail = sanitizeEmail(email);
+    const cleanPassword = password.trim();
+
+    if (!cleanEmail) {
+      setError("Invalid email format.");
+      setLoading(false);
+      return;
+    }
+    if (!cleanPassword) {
+      setError("Password cannot be empty.");
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, {
-        email, password
+        email: cleanEmail,
+        password: cleanPassword
       });
-
-      console.log("Token received:", response.data.token);
 
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
 
       alert("Logged in successfully!");
       navigate("/payments/create");
-
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.msg || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -39,12 +57,28 @@ export default function LoginForm() {
         {error && <p className="error-msg">{error}</p>}
         <form onSubmit={handleSubmit}>
           <label>Email</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <input
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+          />
+
           <label>Password</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          <button type="submit">Login</button>
+          <input
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+          />
+
+          <button type="submit" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
         </form>
-        <button className="secondary-btn" onClick={() => navigate("/register")}>Register</button>
+        <button className="secondary-btn" onClick={() => navigate("/register")}>
+          Register
+        </button>
       </div>
     </div>
   );

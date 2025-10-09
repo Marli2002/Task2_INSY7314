@@ -3,6 +3,14 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import './Form.css';
 
+// Helper to sanitize strings
+const sanitizeString = (str) => {
+  if (typeof str === "string") {
+    return str.replace(/[$.]/g, "").trim();
+  }
+  return str;
+};
+
 export default function PaymentsList() {
   const [payments, setPayments] = useState([]);
   const [error, setError] = useState("");
@@ -13,6 +21,7 @@ export default function PaymentsList() {
     const fetchPayments = async () => {
       setError("");
       setLoading(true);
+
       try {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -27,7 +36,17 @@ export default function PaymentsList() {
           }
         );
 
-        setPayments(response.data);
+        // Sanitize all data from backend
+        const sanitizedPayments = response.data.map(p => ({
+          _id: sanitizeString(p._id),
+          customerName: sanitizeString(p.customerName),
+          amount: Number(p.amount), // assume backend always sends a number
+          paymentMethod: sanitizeString(p.paymentMethod),
+          status: sanitizeString(p.status),
+        }));
+
+        setPayments(sanitizedPayments);
+
       } catch (err) {
         console.error(err);
         setError("Failed to fetch payments. Please try again.");
@@ -44,6 +63,7 @@ export default function PaymentsList() {
       <div className="payments-container">
         <h2>Existing Payments</h2>
         {error && <p className="error-msg">{error}</p>}
+
         {loading ? (
           <p>Loading payments...</p>
         ) : payments.length === 0 ? (
@@ -53,7 +73,7 @@ export default function PaymentsList() {
             <thead>
               <tr>
                 <th>Customer Name</th>
-                <th>Amount ($)</th>
+                <th>Amount (R)</th>
                 <th>Payment Method</th>
                 <th>Status</th>
               </tr>
@@ -62,7 +82,7 @@ export default function PaymentsList() {
               {payments.map((p) => (
                 <tr key={p._id}>
                   <td>{p.customerName}</td>
-                  <td>{p.amount.toFixed(2)}</td>
+                 <td>{`R ${p.amount.toFixed(2)}`}</td>
                   <td>{p.paymentMethod}</td>
                   <td>{p.status}</td>
                 </tr>
@@ -70,6 +90,7 @@ export default function PaymentsList() {
             </tbody>
           </table>
         )}
+
         <button className="secondary-btn" onClick={() => navigate("/payments/create")}>
           Create Payment
         </button>
