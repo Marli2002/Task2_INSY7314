@@ -8,30 +8,67 @@ export default function CreatePayment() {
   const [amount, setAmount] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
+
+    // Frontend validation
+    if (!customerName.trim() || !/^[a-zA-Z ]{2,50}$/.test(customerName.trim())) {
+      setError("Customer name must be 2-50 letters only.");
+      setLoading(false);
+      return;
+    }
+
+    if (!amount || isNaN(amount) || Number(amount) <= 0) {
+      setError("Amount must be a number greater than 0.");
+      setLoading(false);
+      return;
+    }
+
+    if (!['card', 'bank', 'cash', 'paypal'].includes(paymentMethod.toLowerCase())) {
+      setError("Invalid payment method.");
+      setLoading(false);
+      return;
+    }
 
     try {
       const token = localStorage.getItem("token");
+      if (!token) {
+        setError("You are not logged in");
+        navigate("/login");
+        return;
+      }
+
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/payment`,
-        { customerName, amount, paymentMethod },
-        { headers: { "x-auth-token": token } }
+        {
+          customerName: customerName.trim(),
+          amount: Number(amount),
+          paymentMethod
+        },
+        {
+          headers: { "x-auth-token": token }
+        }
       );
 
       console.log("Payment created:", response.data);
       alert("Payment created successfully!");
-      // reset form
       setCustomerName("");
       setAmount("");
       setPaymentMethod("card");
 
+      // Redirect to payments page after creation
+      navigate("/payments");
+
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || "Failed to create payment");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -47,26 +84,33 @@ export default function CreatePayment() {
             value={customerName}
             onChange={(e) => setCustomerName(e.target.value)}
             required
+            placeholder="John Doe"
           />
+
           <label>Amount</label>
           <input
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             required
+            placeholder="100"
+            min="0.01"
+            step="0.01"
           />
+
           <label>Payment Method</label>
-          <select
-            value={paymentMethod}
-            onChange={(e) => setPaymentMethod(e.target.value)}
-          >
+          <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
             <option value="card">Card</option>
             <option value="bank">Bank</option>
             <option value="cash">Cash</option>
             <option value="paypal">PayPal</option>
           </select>
-          <button type="submit">Create Payment</button>
+
+          <button type="submit" disabled={loading}>
+            {loading ? "Creating..." : "Create Payment"}
+          </button>
         </form>
+
         <button className="secondary-btn" onClick={() => navigate("/payments")}>
           View Payments
         </button>

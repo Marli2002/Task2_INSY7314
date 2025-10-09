@@ -1,63 +1,33 @@
-const express = require('express');   
+const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const sanitize = require('mongo-sanitize'); 
 const { createPayment, getPayments } = require('../controllers/paymentController');
-const rateLimit = require('express-rate-limit');
-const helmet = require('helmet');
-const xss = require('xss'); // sanitize strings
 
-// Security Middlewares 
-router.use(helmet()); // sets secure headers
-
-// Rate limiting to prevent brute-force attacks on payment endpoints
-const paymentLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 min
-    max: 50, // limit each IP to 50 requests per window
-    message: 'Too many requests from this IP, please try again later.'
-});
-router.use(paymentLimiter);
-
-// Middleware for input validation & sanitization 
+// Simple input validation middleware
 const validatePayment = (req, res, next) => {
-    // Sanitize inputs to prevent Mongo operator injection & XSS
-    const amount = sanitize(req.body.amount);
-    const customerName = xss(sanitize(req.body.customerName));
-    const paymentMethod = sanitize(req.body.paymentMethod);
+  const { amount, customerName, paymentMethod } = req.body;
 
-    // Validate amount
-    if (!amount || isNaN(amount) || amount <= 0) {
-        return res.status(400).json({ message: 'Invalid amount' });
-    }
+  if (!amount || isNaN(amount) || Number(amount) <= 0)
+    return res.status(400).json({ message: 'Invalid amount' });
 
-    // Validate customer name (letters, spaces only, 2-50 chars)
-    if (!customerName || !/^[a-zA-Z ]{2,50}$/.test(customerName)) {
-        return res.status(400).json({ message: 'Invalid customer name' });
-    }
+  if (!customerName || !/^[a-zA-Z ]{2,50}$/.test(customerName))
+    return res.status(400).json({ message: 'Invalid customer name' });
 
-    // Validate payment method
-    if (!['card', 'bank', 'cash', 'paypal'].includes(paymentMethod?.toLowerCase())) {
-        return res.status(400).json({ message: 'Invalid payment method' });
-    }
+  if (!paymentMethod || !['card', 'bank', 'cash', 'paypal'].includes(paymentMethod.toLowerCase()))
+    return res.status(400).json({ message: 'Invalid payment method' });
 
-    // Replace original body with sanitized values
-    req.body.amount = amount;
-    req.body.customerName = customerName;
-    req.body.paymentMethod = paymentMethod;
-
-    next();
+  next();
 };
 
-// Temporary test route 
-router.post('/test', express.raw({ type: '*/*' }), (req, res) => {
-    res.json({ message: 'Payment route works!' });
-});
-
-// Actual payment routes 
+// Routes
 router.post('/', auth, validatePayment, createPayment);
 router.get('/', auth, getPayments);
 
 module.exports = router;
+
+
+
+
 
 
 /*

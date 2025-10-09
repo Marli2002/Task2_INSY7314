@@ -4,7 +4,7 @@ import axios from "axios";
 import './Form.css';
 
 export default function LoginForm() {
-  const [email, setEmail] = useState(""); // changed from username
+  const [email, setEmail] = useState(""); 
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -15,26 +15,20 @@ export default function LoginForm() {
 
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, {
-        email,
-        password
+        email, password
       });
 
-      console.log("Logged in:", response.data);
+      console.log("Token received:", response.data.token);
 
-      // Save token and user info to localStorage
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
 
       alert("Logged in successfully!");
-      navigate("/payments/create"); // redirect after login
+      navigate("/payments/create");
 
     } catch (err) {
       console.error(err);
-      if (err.response && err.response.data && err.response.data.msg) {
-        setError(err.response.data.msg);
-      } else {
-        setError("Login failed. Please try again.");
-      }
+      setError(err.response?.data?.msg || "Login failed. Please try again.");
     }
   };
 
@@ -45,24 +39,12 @@ export default function LoginForm() {
         {error && <p className="error-msg">{error}</p>}
         <form onSubmit={handleSubmit}>
           <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           <label>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
           <button type="submit">Login</button>
         </form>
-        <button className="secondary-btn" onClick={() => navigate("/register")}>
-          Register
-        </button>
+        <button className="secondary-btn" onClick={() => navigate("/register")}>Register</button>
       </div>
     </div>
   );

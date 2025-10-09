@@ -1,36 +1,38 @@
 const jwt = require('jsonwebtoken');
 const TokenBlacklist = require('../models/TokenBlacklist');
+const mongoSanitize = require('mongo-sanitize');
 
 async function auth(req, res, next) {
   try {
-    // Prefer HttpOnly cookie, fallback to header
-    const token = req.cookies?.accessToken || req.header('x-auth-token');
+    mongoSanitize(req.query);
+    mongoSanitize(req.params);
+    if (req.headers['x-auth-token']) {
+      req.headers['x-auth-token'] = mongoSanitize(req.headers['x-auth-token']);
+    }
+
+    let token = req.cookies?.accessToken || req.header('x-auth-token');
     if (!token) return res.status(401).json({ msg: 'No token, authorization denied' });
+    if (token.startsWith('Bearer ')) token = token.slice(7).trim();
 
-    // Check if token is blacklisted
     const blacklisted = await TokenBlacklist.findOne({ token });
-    if (blacklisted) {
-      return res.status(401).json({ msg: 'Token has been blacklisted. Please log in again.' });
-    }
+    if (blacklisted) return res.status(401).json({ msg: 'Token blacklisted' });
 
-    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (!decoded || !decoded.id) {
-      return res.status(401).json({ msg: 'Invalid token' });
-    }
+    if (!decoded?.id) return res.status(401).json({ msg: 'Invalid token' });
 
-    //Attach extra session info (for session hijacking prevention)
     req.user = { id: decoded.id };
-
-
     next();
   } catch (err) {
     console.error('Auth middleware error:', err.message);
-    res.status(401).json({ msg: 'Token is not valid' });
+    return res.status(401).json({ msg: 'Token is not valid' });
   }
 }
 
 module.exports = auth;
+
+
+
+
 
 
 /*

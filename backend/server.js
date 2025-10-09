@@ -1,75 +1,72 @@
-// Load environment variables   
 require('dotenv').config();
-
-// Check if MONGO_URI is loaded
-console.log('MONGO_URI:', process.env.MONGO_URI);
-
-// Import dependencies
 const express = require('express');
 const https = require('https');
 const fs = require('fs');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const cookieParser = require('cookie-parser');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 const connectDB = require('./config/db');
-const xssClean = require('xss-clean')
 
-// Connect to MongoDB
+// --- Connect to MongoDB ---
 connectDB();
 
-// Initialize Express app
+// --- Initialize Express ---
 const app = express();
 
-// Allow empty bodies without crashing
-app.use(express.json({ strict: false }));
-
-app.use(express.json({ limit: '10kb' })); // prevent huge bodies
+// --- Middleware ---
+// Body parser
+app.use(express.json({ limit: '10kb', strict: false }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
 
-// CORS - allow only frontend to access backend
+// CORS (frontend only)
 app.use(cors({
-    origin: 'https://localhost:5173', // frontend URL
-    credentials: true
+  origin: 'https://localhost:5173',
+  credentials: true
 }));
 
 // Security headers
 app.use(helmet());
-app.use(mongoSanitize());
-app.use(xssClean());
 
-// CSP / Frame-ancestors (prevent clickjacking)
+// Rate limiting (global)
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: 'Too many requests from this IP, please try again later.'
+}));
+
+// Prevent NoSQL injection
+app.use(mongoSanitize());
+
+// Prevent XSS
+app.use(xss());
+
+// CSP / clickjacking protection
 app.use((req, res, next) => {
   res.setHeader("Content-Security-Policy", "default-src 'self'; frame-ancestors 'self'");
   res.setHeader("X-Frame-Options", "DENY");
   next();
 });
 
-
-// Rate limiting
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 // limit each IP to 100 requests per window
-});
-app.use(limiter);
-
-// Routes
+// --- Routes ---
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/payment', require('./routes/payment'));
 
-// SSL credentials
+// --- HTTPS Setup ---
 const sslOptions = {
-    key: fs.readFileSync('./certs/server.key'),
-    cert: fs.readFileSync('./certs/server.cert')
+  key: fs.readFileSync('./certs/server.key'),
+  cert: fs.readFileSync('./certs/server.cert')
 };
 
-// Use PORT from .env or fallback to 5000
+// --- Start Server ---
 const PORT = process.env.API_PORT || 5000;
-
-// Start HTTPS server
 https.createServer(sslOptions, app).listen(PORT, () => {
-    console.log(`Server running on https://localhost:${PORT}`);
+  console.log(`Server running on https://localhost:${PORT}`);
 });
+
 
 /*
 References:
