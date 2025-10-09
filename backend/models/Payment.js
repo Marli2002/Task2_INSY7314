@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const xss = require('xss');
 
 const paymentSchema = new mongoose.Schema({
   userId: {
@@ -9,21 +10,26 @@ const paymentSchema = new mongoose.Schema({
   amount: {
     type: Number,
     required: true,
+    min: [0, 'Amount must be positive']
   },
   customerName: {
     type: String,
     required: true,
+    trim: true,
+    maxlength: [50, 'Customer name too long'],
+    set: v => xss(v)  // sanitize input
   },
   paymentMethod: {
     type: String,
     enum: ['card', 'bank', 'cash', 'paypal'],
     required: true,
+    set: v => xss(v.toLowerCase()) // sanitize and normalize
   },
   status: {
     type: String,
     enum: ['pending', 'completed', 'failed'],
     default: 'pending',
-  }
+  },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Payment', paymentSchema);

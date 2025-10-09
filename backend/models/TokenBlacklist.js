@@ -2,14 +2,15 @@ const mongoose = require('mongoose');
 
 const tokenBlacklistSchema = new mongoose.Schema({
     token: { type: String, required: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // for auditing
     expiresAt: { type: Date, required: true },
+
 });
 
 // Automatically remove expired tokens
 tokenBlacklistSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 module.exports = mongoose.model('TokenBlacklist', tokenBlacklistSchema);
-
 
 /*
 References:

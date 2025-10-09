@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs'); // added for hashing
+const validator = require('validator');
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -20,7 +22,29 @@ const userSchema = new mongoose.Schema({
     },
 }, { timestamps: true });
 
+// Pre-save: hash password if modified
+userSchema.pre('save', async function(next) {
+    if (!this.isModified('password')) return next();
+
+    // Enforce strong password
+    if (!validator.isStrongPassword(this.password, {
+        minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1
+    })) {
+        throw new Error('Password not strong enough');
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+});
+
+// Compare password method
+userSchema.methods.matchPassword = async function(enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password);
+};
+
 module.exports = mongoose.model('User', userSchema);
+
 
 /*
 References:

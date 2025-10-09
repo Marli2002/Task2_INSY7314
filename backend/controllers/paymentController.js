@@ -1,49 +1,93 @@
-// Payment Controller
-// Handles creating and retrieving payment records using Express.js and Mongoose
-
 const Payment = require('../models/Payment');
+const sanitize = require('mongo-sanitize'); // prevent NoSQL injection
+const xss = require('xss'); // sanitize user input for XSS
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
-// Create a new payment
-exports.createPayment = async (req, res) => {
-  try {
-    // Destructuring request body to extract fields
-    const { amount, customerName, paymentMethod } = req.body;
-
-
-    // Creating a new payment document using Mongoose Model.create()
-    const payment = await Payment.create({
-      userId: req.user.id, // from auth middleware
-      amount,
-      customerName,
-      paymentMethod,
-      status: 'pending'
-    });
-
-
-    // Sending 201 Created response on success
-    res.status(201).json(payment);
-  } catch (err) {
-    console.error(err);
-    // Handles server-side errors using Express response object
-    res.status(500).json({ message: 'Server error' });
-  }
+// Apply security headers
+// Ideally applied globally in app.js, but safe to re-apply here
+const secureHeaders = (req, res, next) => {
+    helmet()(req, res, next);
 };
 
-// Get all payments for logged-in user
-exports.getPayments = async (req, res) => {
-  try {
-    // Find all payment documents associated with the logged-in user
-    const payments = await Payment.find({ userId: req.user.id })
-      .sort({ createdAt: -1 }) // Sorts payments by most recent
-      .select('customerName amount paymentMethod status createdAt'); 
+// Rate limiter for payments (prevent brute-force/flood attacks)
+const paymentLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 50, // limit each IP to 50 requests per window
+    message: 'Too many requests from this IP, please try again later.'
+});
 
-    // Returns the payments as a JSON response
-    res.status(200).json(payments);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
+exports.createPayment = [
+    secureHeaders,
+    paymentLimiter,
+    async (req, res) => {
+        try {
+            // Sanitize and validate inputs
+            let amount = Number(sanitize(req.body.amount));
+            let customerName = xss(sanitize(req.body.customerName?.trim()));
+            let paymentMethod = xss(sanitize(req.body.paymentMethod?.trim().toLowerCase()));
+
+            // Validate amount
+            if (!amount || isNaN(amount) || amount <= 0) {
+                return res.status(400).json({ message: 'Invalid amount' });
+            }
+
+            // Validate customer name (letters and spaces only, 2-50 chars)
+            if (!customerName || !/^[a-zA-Z ]{2,50}$/.test(customerName)) {
+                return res.status(400).json({ message: 'Invalid customer name' });
+            }
+
+            // Validate payment method (whitelist)
+            if (!['card', 'bank', 'cash', 'paypal'].includes(paymentMethod)) {
+                return res.status(400).json({ message: 'Invalid payment method' });
+            }
+
+            // Create payment
+            const payment = await Payment.create({
+                userId: req.user.id,
+                amount,
+                customerName,
+                paymentMethod,
+                status: 'pending'
+            });
+
+            // XSS-safe output
+            const safePayment = {
+                ...payment._doc,
+                customerName: xss(payment.customerName)
+            };
+
+            res.status(201).json(safePayment);
+
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Server error' });
+        }
+    }
+];
+
+exports.getPayments = [
+    secureHeaders,
+    paymentLimiter,
+    async (req, res) => {
+        try {
+            const payments = await Payment.find({ userId: req.user.id })
+                .sort({ createdAt: -1 })
+                .select('customerName amount paymentMethod status createdAt');
+
+            // Sanitize output to prevent XSS
+            const safePayments = payments.map(p => ({
+                ...p._doc,
+                customerName: xss(p.customerName)
+            }));
+
+            res.status(200).json(safePayments);
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Server error' });
+        }
+    }
+];
 
 
 /*

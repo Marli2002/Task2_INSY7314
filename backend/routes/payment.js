@@ -1,14 +1,28 @@
 const express = require('express');   
 const router = express.Router();
 const auth = require('../middleware/auth');
-const sanitize = require('mongo-sanitize'); // <--- import mongo-sanitize
+const sanitize = require('mongo-sanitize'); 
 const { createPayment, getPayments } = require('../controllers/paymentController');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const xss = require('xss'); // sanitize strings
 
-// Middleware for input validation & sanitization
+// Security Middlewares 
+router.use(helmet()); // sets secure headers
+
+// Rate limiting to prevent brute-force attacks on payment endpoints
+const paymentLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 min
+    max: 50, // limit each IP to 50 requests per window
+    message: 'Too many requests from this IP, please try again later.'
+});
+router.use(paymentLimiter);
+
+// Middleware for input validation & sanitization 
 const validatePayment = (req, res, next) => {
-    // Sanitize inputs
+    // Sanitize inputs to prevent Mongo operator injection & XSS
     const amount = sanitize(req.body.amount);
-    const customerName = sanitize(req.body.customerName);
+    const customerName = xss(sanitize(req.body.customerName));
     const paymentMethod = sanitize(req.body.paymentMethod);
 
     // Validate amount
@@ -16,7 +30,7 @@ const validatePayment = (req, res, next) => {
         return res.status(400).json({ message: 'Invalid amount' });
     }
 
-    // Validate customer name (letters and spaces only, 2-50 chars)
+    // Validate customer name (letters, spaces only, 2-50 chars)
     if (!customerName || !/^[a-zA-Z ]{2,50}$/.test(customerName)) {
         return res.status(400).json({ message: 'Invalid customer name' });
     }
@@ -34,16 +48,17 @@ const validatePayment = (req, res, next) => {
     next();
 };
 
-// Temporary test route
+// Temporary test route 
 router.post('/test', express.raw({ type: '*/*' }), (req, res) => {
     res.json({ message: 'Payment route works!' });
 });
 
-// Actual payment routes
+// Actual payment routes 
 router.post('/', auth, validatePayment, createPayment);
 router.get('/', auth, getPayments);
 
 module.exports = router;
+
 
 /*
 References:
