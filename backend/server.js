@@ -12,6 +12,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/db');
+const xssClean = require('xss-clean')
 
 // Connect to MongoDB
 connectDB();
@@ -19,8 +20,12 @@ connectDB();
 // Initialize Express app
 const app = express();
 
-// Fixed: allow empty bodies without crashing
+// Allow empty bodies without crashing
 app.use(express.json({ strict: false }));
+
+app.use(express.json({ limit: '10kb' })); // prevent huge bodies
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(cookieParser());
 
 // CORS - allow only frontend to access backend
 app.use(cors({
@@ -30,6 +35,16 @@ app.use(cors({
 
 // Security headers
 app.use(helmet());
+app.use(mongoSanitize());
+app.use(xssClean());
+
+// CSP / Frame-ancestors (prevent clickjacking)
+app.use((req, res, next) => {
+  res.setHeader("Content-Security-Policy", "default-src 'self'; frame-ancestors 'self'");
+  res.setHeader("X-Frame-Options", "DENY");
+  next();
+});
+
 
 // Rate limiting
 const limiter = rateLimit({
