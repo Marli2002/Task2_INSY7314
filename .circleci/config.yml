@@ -42,7 +42,7 @@ jobs:
           name: Install frontend dependencies
           command: |
             cd frontend
-            npm install
+            npm ci
       - save_cache:
           paths:
             - frontend/node_modules
@@ -112,16 +112,10 @@ jobs:
       - attach_workspace:
           at: ~/workspace
       - run:
-          name: Add GitHub to known_hosts
-          command: |
-            mkdir -p ~/.ssh
-            ssh-keyscan github.com >> ~/.ssh/known_hosts
-            chmod 644 ~/.ssh/known_hosts
-      - run:
-          name: Get changed backend files
+          name: Get changed backend files via HTTPS
           command: |
             cd backend
-            git fetch origin main
+            git fetch https://github.com/Marli2002/Task2_INSY7314.git main
             git diff --name-only origin/main...HEAD > changed_files.txt
             cat changed_files.txt
       - run:
