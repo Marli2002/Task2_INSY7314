@@ -61,7 +61,8 @@ jobs:
               -Dsonar.organization=Marli2002 \
               -Dsonar.sources=. \
               -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.login=$SONAR_TOKEN
+              -Dsonar.login=$SONAR_TOKEN \
+              -Dsonar.branch.name=main
       - run:
           name: Run SonarCloud analysis (frontend)
           command: |
@@ -71,7 +72,8 @@ jobs:
               -Dsonar.organization=Marli2002 \
               -Dsonar.sources=. \
               -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.login=$SONAR_TOKEN
+              -Dsonar.login=$SONAR_TOKEN \
+              -Dsonar.branch.name=main
 
   docker-build:
     docker:
@@ -80,9 +82,13 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: Build Docker image
+          name: Build backend Docker image
           command: |
-            docker build -t task2_insy7314:latest .
+            docker build -f backend/Dockerfile -t task2_backend:latest ./backend
+      - run:
+          name: Build frontend Docker image
+          command: |
+            docker build -f frontend/Dockerfile -t task2_frontend:latest ./frontend
 
 workflows:
   version: 2
