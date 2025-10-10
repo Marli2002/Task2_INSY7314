@@ -22,6 +22,10 @@ jobs:
       - run:
           name: Skip backend tests
           command: echo "Skipping backend tests (no test script defined)"
+      - persist_to_workspace:
+          root: .
+          paths:
+            - backend
 
   frontend-build:
     docker:
@@ -46,6 +50,10 @@ jobs:
           command: |
             cd frontend
             npm run build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - frontend
 
   sonarcloud-analysis:
     docker:
@@ -53,34 +61,62 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Create SonarCloud project properties for backend
+          command: |
+            echo "sonar.projectKey=task2_backend" > sonar-project-backend.properties
+            echo "sonar.organization=marli2002" >> sonar-project-backend.properties
+            echo "sonar.sources=backend" >> sonar-project-backend.properties
+            echo "sonar.host.url=https://sonarcloud.io" >> sonar-project-backend.properties
+            echo "sonar.projectName=Task2 Backend" >> sonar-project-backend.properties
+            echo "sonar.projectVersion=1.0" >> sonar-project-backend.properties
+      - run:
           name: Run SonarCloud analysis (backend)
           command: |
-            cd backend
-            sonar-scanner \
-              -Dsonar.projectKey=github-Marli2002-Task2_INSY7314-backend \
-              -Dsonar.organization=marli2002 \
-              -Dsonar.sources=. \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.login=${SONAR_TOKEN} \
-              -Dsonar.branch.name=main
+            sonar-scanner -Dproject.settings=sonar-project-backend.properties
+      - run:
+          name: Create SonarCloud project properties for frontend
+          command: |
+            cat > sonar-project-frontend.properties \<< EOF
+            sonar.projectKey=task2_frontend
+            sonar.organization=marli2002
+            sonar.sources=frontend/src
+            sonar.exclusions=frontend/node_modules/**,frontend/dist/**
+            sonar.host.url=https://sonarcloud.io
+            sonar.projectName=Task2 Frontend
+            sonar.projectVersion=1.0
+            EOF
       - run:
           name: Run SonarCloud analysis (frontend)
           command: |
-            cd frontend
-            sonar-scanner \
-              -Dsonar.projectKey=github-Marli2002-Task2_INSY7314-frontend \
-              -Dsonar.organization=marli2002 \
-              -Dsonar.sources=. \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.login=${SONAR_TOKEN} \
-              -Dsonar.branch.name=main
+            sonar-scanner -Dproject.settings=sonar-project-frontend.properties
 
   docker-build:
     docker:
-      - image: docker:24.0
+      - image: cimg/base:stable
     steps:
       - checkout
-      - setup_remote_docker
+      - attach_workspace:
+          at: .
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Verify Dockerfile exists for backend
+          command: |
+            if [ ! -f backend/Dockerfile ]; then
+              echo "ERROR: backend/Dockerfile not found!"
+              ls -la backend/
+              exit 1
+            fi
+            echo "Backend Dockerfile found"
+      - run:
+          name: Verify Dockerfile exists for frontend
+          command: |
+            if [ ! -f frontend/Dockerfile ]; then
+              echo "ERROR: frontend/Dockerfile not found!"
+              ls -la frontend/
+              exit 1
+            fi
+            echo "Frontend Dockerfile found"
       - run:
           name: Debug repo files
           command: |
@@ -89,11 +125,16 @@ jobs:
       - run:
           name: Build backend Docker image
           command: |
-            docker build -f backend/Dockerfile -t task2_insy7314_backend:latest ./backend
+            cd backend
+            docker build -t task2_insy7314_backend:latest .
       - run:
           name: Build frontend Docker image
           command: |
-            docker build -f frontend/Dockerfile -t task2_insy7314_frontend:latest ./frontend
+            cd frontend
+            docker build -t task2_insy7314_frontend:latest .
+      - run:
+          name: List Docker images
+          command: docker images
 
 workflows:
   version: 2
