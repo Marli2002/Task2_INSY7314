@@ -130,7 +130,7 @@ jobs:
               -Dsonar.branch.name=$SONAR_BRANCH \
               -Dsonar.sources=backend,frontend \
               -Dsonar.tests=backend/tests,frontend/tests \
-              -Dsonar.exclusions=backend/tests/**,frontend/tests/**,**/node_modules/**,**/build/**,**/.vs/**,**/*.db,**/*.sqlite,**/build-wrapper-dump.json \
+              -Dsonar.exclusions=backend/certs/**,frontend/certs/**,backend/tests/**,frontend/tests/**,**/node_modules/**,**/build/**,**/.vs/**,**/*.db,**/*.sqlite,**/build-wrapper-dump.json
               -Dsonar.test.inclusions=backend/tests/**,frontend/tests/** \
               -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info,frontend/coverage/lcov.info
 
