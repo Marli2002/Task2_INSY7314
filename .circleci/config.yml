@@ -1,0 +1,41 @@
+version: 2.1
+
+jobs:
+  sonarcloud-analysis:
+    docker:
+      - image: cimg/openjdk:17.0
+    steps:
+      - checkout
+      - run:
+          name: Run SonarCloud
+          command: |
+            cd backend
+            sonar-scanner \
+              -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+              -Dsonar.organization=$SONAR_ORG \
+              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.login=$SONAR_TOKEN
+
+  build-docker:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build Docker Image
+          command: docker build -t $DOCKERHUB_USERNAME/myapp:${CIRCLE_SHA1} backend
+      - run:
+          name: Push Docker Image
+          command: |
+            echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
+            docker push $DOCKERHUB_USERNAME/myapp:${CIRCLE_SHA1}
+
+workflows:
+  version: 2
+  devsecops-pipeline:
+    jobs:
+      - sonarcloud-analysis
+      - build-docker:
+          requires:
+            - sonarcloud-analysis
