@@ -1,41 +1,53 @@
 version: 2.1
 
 jobs:
-  sonarcloud-analysis:
+  backend-build:
     docker:
-      - image: cimg/openjdk:17.0
+      - image: cimg/node:20.0
     steps:
       - checkout
       - run:
-          name: Run SonarCloud
+          name: Install backend dependencies
           command: |
             cd backend
-            sonar-scanner \
-              -Dsonar.projectKey=$SONAR_PROJECT_KEY \
-              -Dsonar.organization=$SONAR_ORG \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.login=$SONAR_TOKEN
+            npm install
+      - run:
+          name: Run backend tests
+          command: |
+            cd backend
+            npm test
 
-  build-docker:
+  frontend-build:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/node:20.0
+    steps:
+      - checkout
+      - run:
+          name: Install frontend dependencies
+          command: |
+            cd frontend
+            npm install
+      - run:
+          name: Build frontend
+          command: |
+            cd frontend
+            npm run build
+
+  docker-build:
+    docker:
+      - image: docker:24.0
     steps:
       - checkout
       - setup_remote_docker
       - run:
-          name: Build Docker Image
-          command: docker build -t $DOCKERHUB_USERNAME/myapp:${CIRCLE_SHA1} backend
-      - run:
-          name: Push Docker Image
+          name: Build Docker image
           command: |
-            echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
-            docker push $DOCKERHUB_USERNAME/myapp:${CIRCLE_SHA1}
+            docker build -t my-app:latest .
 
 workflows:
   version: 2
-  devsecops-pipeline:
+  build-and-deploy:
     jobs:
-      - sonarcloud-analysis
-      - build-docker:
-          requires:
-            - sonarcloud-analysis
+      - backend-build
+      - frontend-build
+      - docker-build
