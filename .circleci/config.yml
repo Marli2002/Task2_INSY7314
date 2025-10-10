@@ -128,11 +128,10 @@ workflows:
     jobs:
       - backend-build
       - frontend-build
-      # Temporarily disabled
-      # - sonarcloud-analysis:
-      #     requires:
-      #       - backend-build
-      #       - frontend-build
+      - sonarcloud-analysis:
+           requires:
+             - backend-build
+             - frontend-build
       - docker-build:
           requires:
             - backend-build
