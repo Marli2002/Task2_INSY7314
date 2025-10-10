@@ -144,24 +144,24 @@ docker build -t task2_insy7314_backend ./backend
 ### 🚀 How to Run Locally
 
 **1️⃣ Clone the repository**
-bash
-Copy code
-git clone https://github.com/Marli2002/Task2_INSY7314.git
-cd Task2_INSY7314
+- bash
+- Copy code
+- git clone https://github.com/Marli2002/Task2_INSY7314.git
+- cd Task2_INSY7314
 
 **2️⃣ Run Backend**
-bash
-Copy code
-cd backend
-npm install
-npm start
+- bash
+- Copy code
+- cd backend
+- npm install
+- npm start
 
 **3️⃣ Run Frontend**
-bash
-Copy code
-cd frontend
-npm install
-npm run dev
+- bash
+- Copy code
+- cd frontend
+- npm install
+- npm run dev
 
 **4️⃣ Access**
 - Frontend: https://localhost:5173
