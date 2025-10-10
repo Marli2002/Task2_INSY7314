@@ -136,71 +136,75 @@ Both frontend and backend are containerized.
 Each folder (`frontend`, `backend`) contains its own Dockerfile.
 
 **To build locally:**
-```bash
-docker build -t insy7314_frontend ./frontend
-docker build -t insy7314_backend ./backend
-🚀 How to Run Locally
-1️⃣ Clone the repository
 
+bash
+docker build -t task2_insy7314_frontend ./frontend
+docker build -t task2_insy7314_backend ./backend
+
+### 🚀 How to Run Locally
+
+**1️⃣ Clone the repository**
 bash
 Copy code
 git clone https://github.com/Marli2002/Task2_INSY7314.git
 cd Task2_INSY7314
-2️⃣ Run Backend
 
+**2️⃣ Run Backend**
 bash
 Copy code
 cd backend
 npm install
 npm start
-3️⃣ Run Frontend
 
+**3️⃣ Run Frontend**
 bash
 Copy code
 cd frontend
 npm install
 npm run dev
-4️⃣ Access
 
-Frontend: https://localhost:5173
+**4️⃣ Access**
+- Frontend: https://localhost:5173
 
-Backend API: https://localhost:5000
+- Backend API: https://localhost:5000
 
-🧪 SonarCloud Scan Results
+---
+
+### 🧪 SonarCloud Scan Results
 After each push, the pipeline triggers a SonarCloud scan that reports:
 
-Security Rating (A–E)
+- Security Rating (A–E)
 
-Maintainability
+- Maintainability
 
-Reliability
+- Reliability
 
-Test Coverage
+- Test Coverage
 
-Duplications
+- Duplications
 
-Target
+**Target:**
 
-✅ Maintainability = A
+- ✅ Maintainability = A
 
-✅ Reliability = A
+- ✅ Reliability = A
 
-✅ Security ≥ B
+- ✅ Security ≥ B
 
-🏁 Conclusion
+### 🏁 Conclusion
 This project demonstrates:
 
-Full-stack development with React, Node.js, and MongoDB.
+  - Full-stack development with React, Node.js, and MongoDB.
 
-Strong security implementation using best practices for hashing, HTTPS, and input sanitization.
+  - Strong security implementation using best practices for hashing, HTTPS, and    input sanitization.
 
-Integration of a DevSecOps pipeline using CircleCI, SonarCloud, and Docker, ensuring continuous delivery and automated security scanning.
+  - Integration of a DevSecOps pipeline using CircleCI, SonarCloud, and Docker,  ensuring continuous delivery and automated security scanning.
 
-👩‍💻 Developed By
-Team: Anke Bekker, Marli van Zyl, Michke van der Merwe
+### 👩‍💻 Developed By
+  - Team: Anke Bekker, Marli van Zyl, Michke van der Merwe
 
-Module: INSY7314
+  - Module: INSY7314
 
-Lecturer: Glynn Rudman
+  - Lecturer: Glynn Rudman
 
-Year: 2025
+  - Year: 2025
