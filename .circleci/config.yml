@@ -109,7 +109,7 @@ jobs:
           name: List Docker images
           command: docker images
 
-  sonarqube:
+    sonarqube:
     working_directory: ~/build
     docker:
       - image: sonarsource/sonar-scanner-cli
@@ -121,22 +121,22 @@ jobs:
       - run:
           name: Run SonarCloud scan
           command: |
-            SONAR_BRANCH="${CIRCLE_BRANCH:-master}"
+            SONAR_BRANCH="${CIRCLE_BRANCH:-main}"
             echo "Sonar branch value is: $SONAR_BRANCH"
             echo "Sonar org value is: $SONAR_ORG"
-
+            
             sonar-scanner \
               -Dsonar.projectKey=$SONAR_PROJECT_KEY \
               -Dsonar.organization=$SONAR_ORG \
               -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.login=$SONAR_TOKEN \
-              -Dsonar.sources=backend,frontend \
-              -Dsonar.exclusions=**/node_modules/**,**/build/**,**/.vs/**,**/*.db,**/*.sqlite \
-              -Dsonar.tests=backend/tests,frontend/tests \
-              -Dsonar.test.exclusions=**/node_modules/**,**/build/**,**/.vs/** \
-              -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info,frontend/coverage/lcov.info \
               -Dsonar.branch.name=$SONAR_BRANCH \
-              -Dsonar.sourceEncoding=UTF-8
+              -Dsonar.sources=backend,frontend \
+              -Dsonar.tests=backend/tests,frontend/tests \
+              -Dsonar.exclusions=backend/tests/**,frontend/tests/**,**/node_modules/**,**/build/**,**/.vs/**,**/*.db,**/*.sqlite,**/build-wrapper-dump.json \
+              -Dsonar.test.inclusions=backend/tests/**,frontend/tests/** \
+              -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info,backend/coverage/lcov.info
+
 
 workflows:
   version: 2
