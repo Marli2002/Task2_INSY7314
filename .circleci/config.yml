@@ -126,6 +126,11 @@ jobs:
             fi
             echo "Frontend Dockerfile ready"
       - run:
+          name: Debug repo files
+          command: |
+            pwd
+            ls -R
+      - run:
           name: Build backend Docker image
           command: |
             cd backend
