@@ -44,11 +44,6 @@ jobs:
             cd frontend
             npm install
       # Frontend tests skipped
-      #- run:
-      #    name: Run frontend tests
-      #    command: |
-      #      cd frontend
-      #      npm test
       - run:
           name: Build frontend
           command: |
@@ -130,8 +125,10 @@ jobs:
               -Dsonar.branch.name=$SONAR_BRANCH \
               -Dsonar.sources=backend,frontend \
               -Dsonar.tests=backend/tests \
-              -Dsonar.exclusions=backend/tests/**,frontend/tests/**,**/node_modules/**,**/build/**,**/.vs/**,**/*.db,**/*.sqlite,**/build-wrapper-dump.json \
-              -Dsonar.test.inclusions=backend/tests/**
+              -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info \
+              -Dsonar.exclusions=backend/tests/**,frontend/tests/**,backend/certs/**,frontend/certs/**,**/node_modules/**,**/build/**,**/.vs/**,**/*.db,**/*.sqlite,**/build-wrapper-dump.json \
+              -Dsonar.test.inclusions=backend/tests/** \
+              -Dsonar.security.exclusions=backend/certs/**,frontend/certs/**
 
 workflows:
   version: 2
