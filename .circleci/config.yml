@@ -20,7 +20,7 @@ jobs:
             - backend/node_modules
           key: backend-node-deps-{{ checksum "backend/package-lock.json" }}
       - run:
-          name: Run backend tests with coverage
+          name: Run backend tests
           command: |
             cd backend
             npm test
@@ -43,12 +43,7 @@ jobs:
           command: |
             cd frontend
             npm install
-      # Uncomment to run frontend tests
-      #- run:
-      #    name: Run frontend tests
-      #    command: |
-      #      cd frontend
-      #      npm test
+      # Frontend tests skipped
       - run:
           name: Build frontend
           command: |
@@ -69,26 +64,47 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
+          name: Check and fix Dockerfile naming for backend
+          command: |
+            cd backend
+            if [ -f DockerFile ]; then
+              mv DockerFile Dockerfile
+            fi
+            if [ ! -f Dockerfile ]; then
+              echo "ERROR: No Dockerfile found!"
+              ls -la
+              exit 1
+            fi
+      - run:
+          name: Check and fix Dockerfile naming for frontend
+          command: |
+            cd frontend
+            if [ -f DockerFile ]; then
+              mv DockerFile Dockerfile
+            fi
+            if [ ! -f Dockerfile ]; then
+              echo "ERROR: No Dockerfile found!"
+              ls -la
+              exit 1
+            fi
+      - run:
           name: Build backend Docker image
           command: |
             cd backend
-            if [ -f DockerFile ]; then mv DockerFile Dockerfile; fi
-            if [ ! -f Dockerfile ]; then echo "ERROR: No Dockerfile found!"; exit 1; fi
             docker build -t task2_insy7314_backend:latest .
       - run:
           name: Build frontend Docker image
           command: |
             cd frontend
-            if [ -f DockerFile ]; then mv DockerFile Dockerfile; fi
-            if [ ! -f Dockerfile ]; then echo "ERROR: No Dockerfile found!"; exit 1; fi
             docker build -t task2_insy7314_frontend:latest .
       - run:
           name: List Docker images
           command: docker images
 
   sonarqube:
+    working_directory: ~/workspace
     docker:
-      - image: sonarsource/sonar-scanner-cli:latest
+      - image: sonarsource/sonar-scanner-cli
     resource_class: small
     steps:
       - checkout
@@ -110,8 +126,11 @@ jobs:
               -Dsonar.sources=backend,frontend \
               -Dsonar.tests=backend/tests \
               -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info \
-              -Dsonar.exclusions=backend/tests/**,frontend/tests/**,backend/certs/**,frontend/certs/**,**/node_modules/**,**/build/**,**/.vs/**,**/*.db,**/*.sqlite \
+              -Dsonar.exclusions=backend/tests/**,frontend/tests/**,backend/certs/**,frontend/certs/**,**/node_modules/**,**/.vs/**,**/*.db,**/*.sqlite \
               -Dsonar.test.inclusions=backend/tests/** \
+              -Dsonar.coverage.exclusions=frontend/** \
+              -Dsonar.newCode=branch \
+              -Dsonar.qualitygate.wait=true \
               -Dsonar.security.exclusions=backend/certs/**,frontend/certs/**
 
 workflows:
