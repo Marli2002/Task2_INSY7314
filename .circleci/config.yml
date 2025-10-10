@@ -63,7 +63,7 @@ jobs:
       - run:
           name: Create SonarCloud project properties for backend
           command: |
-            cat > sonar-project-backend.properties << EOF
+            cat > sonar-project-backend.properties \<< EOF
             sonar.projectKey=task2_backend
             sonar.organization=marli2002
             sonar.sources=backend
@@ -147,3 +147,4 @@ workflows:
           requires:
             - backend-build
             - frontend-build
+            
