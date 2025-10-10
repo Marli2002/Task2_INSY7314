@@ -140,3 +140,7 @@ workflows:
           requires:
             - backend-build
             - frontend-build
+      - sonarqube:
+          requires:
+            - backend-build
+            - frontend-build
