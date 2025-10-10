@@ -84,11 +84,11 @@ jobs:
       - run:
           name: Build backend Docker image
           command: |
-            docker build -f backend/Dockerfile -t task2_INSY7314_backend:latest ./backend
+            docker build -f backend/Dockerfile -t task2_insy7314_backend:latest ./backend
       - run:
           name: Build frontend Docker image
           command: |
-            docker build -f frontend/Dockerfile -t task2_INSY7314_frontend:latest ./frontend
+            docker build -f frontend/Dockerfile -t task2_insy7314_frontend:latest ./frontend
 
 workflows:
   version: 2
