@@ -107,28 +107,29 @@ jobs:
           command: docker images
 
   sonarqube:
-    working_directory: ~/build
-    docker:
-      - image: sonarsource/sonar-scanner-cli
-    resource_class: small
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/workspace
-      - run:
-          name: Run SonarCloud scan
-          command: |
-            SONAR_BRANCH="${CIRCLE_BRANCH:-master}"
-            echo "Sonar branch value is: $SONAR_BRANCH"
-            echo "Sonar org value is: $SONAR_ORG"
-            sonar-scanner \
-              -Dsonar.projectKey=$SONAR_PROJECT_KEY \
-              -Dsonar.organization=$SONAR_ORG \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.login=$SONAR_TOKEN \
-              -Dsonar.sources=. \
-              -Dsonar.branch.name=$SONAR_BRANCH \
-              -Dsonar.exclusions=**/android/**,**/ios/** 
+  working_directory: ~/build
+  docker:
+    - image: sonarsource/sonar-scanner-cli
+  resource_class: small
+  steps:
+    - checkout
+    - attach_workspace:
+        at: ~/workspace
+    - run:
+        name: Run SonarCloud scan
+        command: |
+          SONAR_BRANCH="${CIRCLE_BRANCH:-master}"
+          echo "Sonar branch value is: $SONAR_BRANCH"
+          echo "Sonar org value is: $SONAR_ORG"
+          sonar-scanner \
+            -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+            -Dsonar.organization=$SONAR_ORG \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=$SONAR_TOKEN \
+            -Dsonar.sources=. \
+            -Dsonar.branch.name=$SONAR_BRANCH \
+            -Dsonar.newCode.referenceBranch=main \
+            -Dsonar.exclusions=**/android/**,**/ios/**
 
 workflows:
   version: 2
