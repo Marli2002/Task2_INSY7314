@@ -57,22 +57,22 @@ jobs:
           command: |
             cd backend
             sonar-scanner \
-              -Dsonar.projectKey=task2_backend \
-              -Dsonar.organization=Marli2002 \
+              -Dsonar.projectKey=github-Marli2002-Task2_INSY7314-backend \
+              -Dsonar.organization=marli2002 \
               -Dsonar.sources=. \
               -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.login=$SONAR_TOKEN \
+              -Dsonar.login=${SONAR_TOKEN} \
               -Dsonar.branch.name=main
       - run:
           name: Run SonarCloud analysis (frontend)
           command: |
             cd frontend
             sonar-scanner \
-              -Dsonar.projectKey=task2_frontend \
-              -Dsonar.organization=Marli2002 \
+              -Dsonar.projectKey=github-Marli2002-Task2_INSY7314-frontend \
+              -Dsonar.organization=marli2002 \
               -Dsonar.sources=. \
               -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.login=$SONAR_TOKEN \
+              -Dsonar.login=${SONAR_TOKEN} \
               -Dsonar.branch.name=main
 
   docker-build:
