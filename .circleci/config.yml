@@ -23,10 +23,13 @@ jobs:
           name: Skip backend tests
           command: echo "Skipping backend tests (no test script defined)"
       - run:
+          name: Install SonarScanner
+          command: npm install -g sonar-scanner
+      - run:
           name: Run SonarCloud analysis (backend)
           command: |
             cd backend
-            npx sonar-scanner \
+            sonar-scanner \
               -Dsonar.projectKey=task2_backend \
               -Dsonar.organization=Marli2002 \
               -Dsonar.sources=. \
@@ -57,10 +60,13 @@ jobs:
             cd frontend
             npm run build
       - run:
+          name: Install SonarScanner
+          command: npm install -g sonar-scanner
+      - run:
           name: Run SonarCloud analysis (frontend)
           command: |
             cd frontend
-            npx sonar-scanner \
+            sonar-scanner \
               -Dsonar.projectKey=task2_frontend \
               -Dsonar.organization=Marli2002 \
               -Dsonar.sources=. \
