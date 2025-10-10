@@ -10,13 +10,13 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const connectDB = require('./config/db');
 
-// --- Connect to MongoDB ---
+//  Connect to MongoDB 
 connectDB();
 
-// --- Initialize Express ---
+// Initialize Express
 const app = express();
 
-// --- Middleware ---
+// Middleware
 // Body parser
 app.use(express.json({ limit: '10kb', strict: false }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
