@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const validator = require('validator');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
+const sanitize = require('mongo-sanitize');
 const User = require('../models/User');
+const jwt = require('jsonwebtoken');
 const TokenBlacklist = require('../models/TokenBlacklist');
 const authMiddleware = require('../middleware/auth');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 // Security headers
 router.use(helmet());
@@ -21,8 +21,7 @@ const authLimiter = rateLimit({
 router.use(['/login', '/register'], authLimiter);
 
 // JWT generator
-const generateToken = (id) =>
-  jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+const generateToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
 // Strong password check
 const isStrongPassword = (password) =>
@@ -34,98 +33,102 @@ const isStrongPassword = (password) =>
     minSymbols: 1
   });
 
-//Register
+// Register
 router.post('/register', async (req, res) => {
   try {
-    let { username, email, password } = req.body;
+    const username = sanitize(req.body.username?.trim());
+    const email = sanitize(req.body.email?.trim());
+    const password = req.body.password;
 
-    if (!username || !email || !password)
-      return res.status(400).json({ msg: 'All fields required' });
+    if (!username || username.length < 3 || username.length > 20)
+      return res.status(400).json({ message: 'Invalid username' });
 
-    if (!validator.isEmail(email))
-      return res.status(400).json({ msg: 'Invalid email' });
+    if (!email || !validator.isEmail(email))
+      return res.status(400).json({ message: 'Invalid email' });
 
-    if (!isStrongPassword(password))
-      return res.status(400).json({ msg: 'Password too weak' });
+    if (!password || !isStrongPassword(password))
+      return res.status(400).json({ message: 'Password not strong enough' });
 
-    // Data already sanitized in server.js middleware
     const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ msg: 'User already exists' });
+    if (existingUser)
+      return res.status(400).json({ message: 'User already exists' });
 
-    const hashedPassword = await bcrypt.hash(password, await bcrypt.genSalt(12));
-    const newUser = new User({ username, email, password: hashedPassword });
-    await newUser.save();
-
-    const token = generateToken(newUser._id);
-
-    res.cookie('accessToken', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 1000
-    });
-
-    res.json({ token, user: { id: newUser._id, username, email } });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
-  }
-});
-
-// Login
-router.post('/login', async (req, res) => {
-  try {
-    let { email, password } = req.body;
-    if (!email || !password)
-      return res.status(400).json({ msg: 'All fields required' });
-
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ msg: 'User does not exist' });
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ msg: 'Invalid credentials' });
+    // Pass raw password (model will hash it)
+    const user = await User.create({ username, email, password });
 
     const token = generateToken(user._id);
     res.cookie('accessToken', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 60 * 1000
+      maxAge: 60 * 60 * 1000,
     });
 
-    res.json({ token, user: { id: user._id, username: user.username, email } });
+    res.status(201).json({ user: { id: user._id, username, email }, token });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Login
+router.post('/login', async (req, res) => {
+  try {
+    const email = sanitize(req.body.email?.trim());
+    const password = req.body.password;
+
+    if (!email || !validator.isEmail(email))
+      return res.status(400).json({ message: 'Invalid email' });
+
+    if (!password) return res.status(400).json({ message: 'Password required' });
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ message: 'Invalid credentials' });
+
+    const isMatch = await user.matchPassword(password);
+    if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
+
+    const token = generateToken(user._id);
+    res.cookie('accessToken', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 1000,
+    });
+
+    res.json({ user: { id: user._id, username: user.username, email }, token });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
 // Logout
 router.post('/logout', authMiddleware, async (req, res) => {
   try {
-    const token = req.cookies?.accessToken || req.header('x-auth-token');
-    if (!token) return res.status(400).json({ msg: 'No token provided' });
+    let token = req.cookies?.accessToken || req.header('x-auth-token');
+    if (!token) return res.status(400).json({ message: 'No token provided' });
+    if (token.startsWith('Bearer ')) token = token.slice(7).trim();
 
     const decoded = jwt.decode(token);
-    if (!decoded?.exp) return res.status(400).json({ msg: 'Invalid token' });
+    if (!decoded?.exp) return res.status(400).json({ message: 'Invalid token' });
 
     await TokenBlacklist.create({ token, expiresAt: new Date(decoded.exp * 1000) });
 
     res.clearCookie('accessToken', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax'
+      sameSite: 'lax',
     });
 
-    res.json({ msg: 'Logged out successfully' });
+    res.json({ message: 'Logged out successfully' });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
 module.exports = router;
-
 
 
 
