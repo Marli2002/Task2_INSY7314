@@ -22,7 +22,7 @@ exports.createPayment = async (req, res) => {
   }
 };
 
-// Get payments
+// Get payments for logged-in user
 exports.getPayments = async (req, res) => {
   try {
     const payments = await Payment.find({ userId: req.user.id })
