@@ -51,17 +51,17 @@ app.use((req, res, next) => {
   next();
 });
 
-// --- Routes ---
+//  Routes 
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/payment', require('./routes/payment'));
 
-// --- HTTPS Setup ---
+// HTTPS Setup 
 const sslOptions = {
   key: fs.readFileSync('./certs/server.key'),
   cert: fs.readFileSync('./certs/server.cert')
 };
 
-// --- Start Server ---
+// Start Server 
 const PORT = process.env.API_PORT || 5000;
 https.createServer(sslOptions, app).listen(PORT, () => {
   console.log(`Server running on https://localhost:${PORT}`);
