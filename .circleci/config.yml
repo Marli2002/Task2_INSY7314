@@ -76,15 +76,13 @@ jobs:
       - run:
           name: Create SonarCloud project properties for frontend
           command: |
-            cat > sonar-project-frontend.properties \<< EOF
-            sonar.projectKey=task2_frontend
-            sonar.organization=marli2002
-            sonar.sources=frontend/src
-            sonar.exclusions=frontend/node_modules/**,frontend/dist/**
-            sonar.host.url=https://sonarcloud.io
-            sonar.projectName=Task2 Frontend
-            sonar.projectVersion=1.0
-            EOF
+            echo "sonar.projectKey=task2_frontend" > sonar-project-frontend.properties
+            echo "sonar.organization=marli2002" >> sonar-project-frontend.properties
+            echo "sonar.sources=frontend/src" >> sonar-project-frontend.properties
+            echo "sonar.exclusions=frontend/node_modules/**,frontend/dist/**" >> sonar-project-frontend.properties
+            echo "sonar.host.url=https://sonarcloud.io" >> sonar-project-frontend.properties
+            echo "sonar.projectName=Task2 Frontend" >> sonar-project-frontend.properties
+            echo "sonar.projectVersion=1.0" >> sonar-project-frontend.properties
       - run:
           name: Run SonarCloud analysis (frontend)
           command: |
@@ -100,23 +98,33 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: Verify Dockerfile exists for backend
+          name: Check and fix Dockerfile naming for backend
           command: |
-            if [ ! -f backend/Dockerfile ]; then
-              echo "ERROR: backend/Dockerfile not found!"
-              ls -la backend/
+            cd backend
+            if [ -f DockerFile ]; then
+              echo "Found DockerFile (wrong case), renaming to Dockerfile"
+              mv DockerFile Dockerfile
+            fi
+            if [ ! -f Dockerfile ]; then
+              echo "ERROR: No Dockerfile found!"
+              ls -la
               exit 1
             fi
-            echo "Backend Dockerfile found"
+            echo "Backend Dockerfile ready"
       - run:
-          name: Verify Dockerfile exists for frontend
+          name: Check and fix Dockerfile naming for frontend
           command: |
-            if [ ! -f frontend/Dockerfile ]; then
-              echo "ERROR: frontend/Dockerfile not found!"
-              ls -la frontend/
+            cd frontend
+            if [ -f DockerFile ]; then
+              echo "Found DockerFile (wrong case), renaming to Dockerfile"
+              mv DockerFile Dockerfile
+            fi
+            if [ ! -f Dockerfile ]; then
+              echo "ERROR: No Dockerfile found!"
+              ls -la
               exit 1
             fi
-            echo "Frontend Dockerfile found"
+            echo "Frontend Dockerfile ready"
       - run:
           name: Build backend Docker image
           command: |
