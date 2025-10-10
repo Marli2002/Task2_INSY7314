@@ -109,7 +109,7 @@ jobs:
           name: List Docker images
           command: docker images
 
-    sonarqube:
+  sonarqube:
     working_directory: ~/build
     docker:
       - image: sonarsource/sonar-scanner-cli
@@ -136,7 +136,6 @@ jobs:
               -Dsonar.exclusions=backend/tests/**,frontend/tests/**,**/node_modules/**,**/build/**,**/.vs/**,**/*.db,**/*.sqlite,**/build-wrapper-dump.json \
               -Dsonar.test.inclusions=backend/tests/**,frontend/tests/** \
               -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info,backend/coverage/lcov.info
-
 
 workflows:
   version: 2
