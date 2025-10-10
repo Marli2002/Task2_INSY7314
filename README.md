@@ -3,8 +3,6 @@
 This project is a secure full-stack web application built for the INSY7314 Proof of Evidence (POE).  
 It demonstrates strong implementation of backend security, frontend input validation, and DevSecOps automation using modern tools and best practices.
 
----
-
 ## 🧠 Overview
 
 The system allows users to:
@@ -13,8 +11,6 @@ The system allows users to:
 - Create new payment entries and view their existing payments.
 
 All data is stored in a MongoDB database, and communication between the frontend and backend happens securely via HTTPS (SSL).
-
----
 
 ## 🛠️ Technologies Used
 
@@ -26,7 +22,6 @@ All data is stored in a MongoDB database, and communication between the frontend
 | Security | HTTPS/SSL, bcrypt password hashing, JWT authentication, regex input validation, sanitization |
 | DevSecOps | CircleCI (CI/CD), SonarCloud (code quality & security analysis), Docker (containerization) |
 
----
 
 ## ⚙️ Backend Implementation
 
@@ -60,7 +55,6 @@ All data is stored in a MongoDB database, and communication between the frontend
 | /api/payments    | GET    | Fetch user’s payments           |
 | /api/payments    | POST   | Create a new payment (default status: pending) |
 
----
 
 ## 💻 Frontend Implementation
 
@@ -81,7 +75,6 @@ All data is stored in a MongoDB database, and communication between the frontend
 - `PaymentsList.jsx` → View Payments
 - `CreatePayment.jsx` → Add Payment
 
----
 
 ## 🔐 Security Features Summary
 
@@ -95,7 +88,6 @@ All data is stored in a MongoDB database, and communication between the frontend
 | Helmet Middleware   | Adds HTTP headers for extra security.                |
 | CORS Configuration  | Restricts API access to the frontend origin only.    |
 
----
 
 ## 🧰 DevSecOps Pipeline
 
@@ -119,8 +111,6 @@ A CI/CD pipeline is configured using CircleCI, located in `.circleci/config.yml`
     - Maintainability
     - Duplications
 
----
-
 ### 🧩 Environment Variables (in CircleCI)
 
 | Variable             | Description                              |
@@ -129,7 +119,6 @@ A CI/CD pipeline is configured using CircleCI, located in `.circleci/config.yml`
 | SONAR_PROJECT_KEY    | Your SonarCloud project key              |
 | SONAR_TOKEN          | SonarCloud authentication token          |
 
----
 
 ### 🐳 Docker Setup
 
@@ -166,46 +155,32 @@ docker build -t task2_insy7314_backend ./backend
 
 **4️⃣ Access**
 - Frontend: https://localhost:5173
-
 - Backend API: https://localhost:5000
 
----
 
 ### 🧪 SonarCloud Scan Results
 After each push, the pipeline triggers a SonarCloud scan that reports:
 
 - Security Rating (A–E)
-
 - Maintainability
-
 - Reliability
-
 - Test Coverage
-
 - Duplications
 
 **Target:**
 
 - ✅ Maintainability = A
-
 - ✅ Reliability = A
-
 - ✅ Security ≥ B
 
 ### 🏁 Conclusion
 This project demonstrates:
 
   - Full-stack development with React, Node.js, and MongoDB.
-
   - Strong security implementation using best practices for hashing, HTTPS, and    input sanitization.
-
   - Integration of a DevSecOps pipeline using CircleCI, SonarCloud, and Docker,  ensuring continuous delivery and automated security scanning.
 
 ### 👩‍💻 Developed By
   - Team: Anke Bekker, Marli van Zyl, Michke van der Merwe
-
   - Module: INSY7314
-
   - Lecturer: Glynn Rudman
-
-  - Year: 2025
