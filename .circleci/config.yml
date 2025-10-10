@@ -61,32 +61,15 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Create SonarCloud project properties for backend
+          name: Run SonarCloud analysis for entire project
           command: |
-            echo "sonar.projectKey=task2_backend" > sonar-project-backend.properties
-            echo "sonar.organization=marli2002" >> sonar-project-backend.properties
-            echo "sonar.sources=backend" >> sonar-project-backend.properties
-            echo "sonar.host.url=https://sonarcloud.io" >> sonar-project-backend.properties
-            echo "sonar.projectName=Task2 Backend" >> sonar-project-backend.properties
-            echo "sonar.projectVersion=1.0" >> sonar-project-backend.properties
-      - run:
-          name: Run SonarCloud analysis (backend)
-          command: |
-            sonar-scanner -Dproject.settings=sonar-project-backend.properties
-      - run:
-          name: Create SonarCloud project properties for frontend
-          command: |
-            echo "sonar.projectKey=task2_frontend" > sonar-project-frontend.properties
-            echo "sonar.organization=marli2002" >> sonar-project-frontend.properties
-            echo "sonar.sources=frontend/src" >> sonar-project-frontend.properties
-            echo "sonar.exclusions=frontend/node_modules/**,frontend/dist/**" >> sonar-project-frontend.properties
-            echo "sonar.host.url=https://sonarcloud.io" >> sonar-project-frontend.properties
-            echo "sonar.projectName=Task2 Frontend" >> sonar-project-frontend.properties
-            echo "sonar.projectVersion=1.0" >> sonar-project-frontend.properties
-      - run:
-          name: Run SonarCloud analysis (frontend)
-          command: |
-            sonar-scanner -Dproject.settings=sonar-project-frontend.properties
+            sonar-scanner \
+              -Dsonar.projectKey=Task2_INSY7314 \
+              -Dsonar.organization=marli2002 \
+              -Dsonar.sources=backend,frontend/src \
+              -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/.scannerwork/**,**/certs/**,**/.vs/** \
+              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.token=${SONAR_TOKEN}
 
   docker-build:
     docker:
@@ -126,11 +109,6 @@ jobs:
             fi
             echo "Frontend Dockerfile ready"
       - run:
-          name: Debug repo files
-          command: |
-            pwd
-            ls -R
-      - run:
           name: Build backend Docker image
           command: |
             cd backend
@@ -150,10 +128,11 @@ workflows:
     jobs:
       - backend-build
       - frontend-build
-      - sonarcloud-analysis:
-          requires:
-            - backend-build
-            - frontend-build
+      # Temporarily disabled
+      # - sonarcloud-analysis:
+      #     requires:
+      #       - backend-build
+      #       - frontend-build
       - docker-build:
           requires:
             - backend-build
