@@ -6,11 +6,19 @@ jobs:
       - image: cimg/node:20.0
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - backend-node-deps-{{ checksum "backend/package-lock.json" }}
+            - backend-node-deps-
       - run:
           name: Install backend dependencies
           command: |
             cd backend
             npm install
+      - save_cache:
+          paths:
+            - backend/node_modules
+          key: backend-node-deps-{{ checksum "backend/package-lock.json" }}
       - run:
           name: Run backend tests
           command: |
@@ -22,11 +30,19 @@ jobs:
       - image: cimg/node:20.0
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - frontend-node-deps-{{ checksum "frontend/package-lock.json" }}
+            - frontend-node-deps-
       - run:
           name: Install frontend dependencies
           command: |
             cd frontend
             npm install
+      - save_cache:
+          paths:
+            - frontend/node_modules
+          key: frontend-node-deps-{{ checksum "frontend/package-lock.json" }}
       - run:
           name: Build frontend
           command: |
@@ -50,4 +66,7 @@ workflows:
     jobs:
       - backend-build
       - frontend-build
-      - docker-build
+      - docker-build:
+          requires:
+            - backend-build
+            - frontend-build
