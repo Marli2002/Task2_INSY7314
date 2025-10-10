@@ -20,7 +20,7 @@ const isStrongPassword = (password) => {
   });
 };
 
-// Register
+// Register user
 exports.register = async (req, res) => {
   try {
     const username = sanitize(req.body.username?.trim());
@@ -60,7 +60,7 @@ exports.register = async (req, res) => {
   }
 };
 
-// Login
+// Login user
 exports.login = async (req, res) => {
   try {
     const email = sanitize(req.body.email?.trim());
@@ -94,7 +94,7 @@ exports.login = async (req, res) => {
 };
 
 
-// Logout
+// Logout user
 exports.logout = async (req, res) => {
   try {
     let token = req.cookies?.accessToken || req.header('x-auth-token');

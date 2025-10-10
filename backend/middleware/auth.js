@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const TokenBlacklist = require('../models/TokenBlacklist');
 const mongoSanitize = require('mongo-sanitize');
 
+// Auth middleware
 async function auth(req, res, next) {
   try {
     mongoSanitize(req.query);
