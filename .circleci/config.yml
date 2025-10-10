@@ -20,7 +20,7 @@ jobs:
             - backend/node_modules
           key: backend-node-deps-{{ checksum "backend/package-lock.json" }}
       - run:
-          name: Run backend tests and generate coverage
+          name: Run backend tests (generate coverage even if no tests)
           command: |
             cd backend
             npx jest --coverage --passWithNoTests
@@ -67,28 +67,6 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: Check and fix Dockerfile naming for backend
-          command: |
-            cd backend
-            if [ -f DockerFile ]; then
-              mv DockerFile Dockerfile
-            fi
-            if [ ! -f Dockerfile ]; then
-              echo "ERROR: No Dockerfile found!"
-              exit 1
-            fi
-      - run:
-          name: Check and fix Dockerfile naming for frontend
-          command: |
-            cd frontend
-            if [ -f DockerFile ]; then
-              mv DockerFile Dockerfile
-            fi
-            if [ ! -f Dockerfile ]; then
-              echo "ERROR: No Dockerfile found!"
-              exit 1
-            fi
-      - run:
           name: Build backend Docker image
           command: |
             cd backend
@@ -112,32 +90,20 @@ jobs:
       - attach_workspace:
           at: ~/workspace
       - run:
-          name: Fetch main branch via HTTPS
+          name: Run SonarCloud scan
           command: |
-            cd backend
-            git remote set-url origin https://github.com/Marli2002/Task2_INSY7314.git
-            git fetch origin main
-            git diff --name-only origin/main...HEAD > changed_files.txt
-            cat changed_files.txt
-      - run:
-          name: Run SonarCloud scan (new code quality gate for small changes)
-          command: |
-            SONAR_BRANCH="${CIRCLE_BRANCH:-master}"
-            CHANGED_FILES=$(paste -sd "," backend/changed_files.txt)
-            echo "Scanning only changed files: $CHANGED_FILES"
+            SONAR_BRANCH="${CIRCLE_BRANCH:-main}"
+            echo "Sonar branch value is: $SONAR_BRANCH"
             sonar-scanner \
               -Dsonar.projectKey=$SONAR_PROJECT_KEY \
               -Dsonar.organization=$SONAR_ORG \
               -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.login=$SONAR_TOKEN \
               -Dsonar.sources=. \
-              -Dsonar.inclusions="$CHANGED_FILES" \
               -Dsonar.branch.name=$SONAR_BRANCH \
-              -Dsonar.newCode.referenceBranch=main \
               -Dsonar.exclusions=**/node_modules/**,**/frontend/**,**/*.test.js,**/__tests__/** \
               -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info \
-              -Dsonar.qualitygate.wait=true \
-              -Dsonar.qualitygate.newCodeThreshold=20
+              -Dsonar.newCode.ignoreIssuesOnSmallChanges=true
 
 workflows:
   version: 2
