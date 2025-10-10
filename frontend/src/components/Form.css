@@ -50,7 +50,7 @@ body, html, #root {
   padding: 10px 20px;
   border-radius: 8px;
   border: none;
-  background-color: #61dafb;
+  background-color: #56b267;
   color: white;
   font-weight: bold;
   cursor: pointer;
@@ -59,7 +59,7 @@ body, html, #root {
 }
 
 .form-container button:hover {
-  background-color: #21a1f1;
+  background-color: #56b267;
 }
 
 .secondary-btn {
