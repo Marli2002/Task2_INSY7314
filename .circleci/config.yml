@@ -55,23 +55,6 @@ jobs:
           paths:
             - frontend
 
-  sonarcloud-analysis:
-    docker:
-      - image: sonarsource/sonar-scanner-cli:latest
-    steps:
-      - checkout
-      - run:
-          name: Run SonarCloud analysis for entire project
-          command: |
-            sonar-scanner \
-              -Dsonar.projectKey=Task2_INSY7314 \
-              -Dsonar.organization=marli2002 \
-              -Dsonar.sources=backend,frontend/src \
-              -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/.scannerwork/**,**/certs/**,**/.vs/** \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.token=${SONAR_TOKEN} \
-              -Dsonar.branch.name=${CIRCLE_BRANCH}
-
   docker-build:
     docker:
       - image: cimg/base:stable
@@ -129,10 +112,6 @@ workflows:
     jobs:
       - backend-build
       - frontend-build
-      - sonarcloud-analysis:
-           requires:
-             - backend-build
-             - frontend-build
       - docker-build:
           requires:
             - backend-build
