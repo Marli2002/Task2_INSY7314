@@ -20,8 +20,10 @@ jobs:
             - backend/node_modules
           key: backend-node-deps-{{ checksum "backend/package-lock.json" }}
       - run:
-          name: Skip backend tests
-          command: echo "Skipping backend tests (no test script defined)"
+          name: Run backend tests
+          command: |
+            cd backend
+            npm test
       - persist_to_workspace:
           root: .
           paths:
@@ -46,6 +48,11 @@ jobs:
             - frontend/node_modules
           key: frontend-node-deps-{{ checksum "frontend/package-lock.json" }}
       - run:
+          name: Run frontend tests
+          command: |
+            cd frontend
+            npm test
+      - run:
           name: Build frontend
           command: |
             cd frontend
@@ -69,7 +76,6 @@ jobs:
           command: |
             cd backend
             if [ -f DockerFile ]; then
-              echo "Found DockerFile (wrong case), renaming to Dockerfile"
               mv DockerFile Dockerfile
             fi
             if [ ! -f Dockerfile ]; then
@@ -77,13 +83,11 @@ jobs:
               ls -la
               exit 1
             fi
-            echo "Backend Dockerfile ready"
       - run:
           name: Check and fix Dockerfile naming for frontend
           command: |
             cd frontend
             if [ -f DockerFile ]; then
-              echo "Found DockerFile (wrong case), renaming to Dockerfile"
               mv DockerFile Dockerfile
             fi
             if [ ! -f Dockerfile ]; then
@@ -91,7 +95,6 @@ jobs:
               ls -la
               exit 1
             fi
-            echo "Frontend Dockerfile ready"
       - run:
           name: Build backend Docker image
           command: |
@@ -121,14 +124,19 @@ jobs:
             SONAR_BRANCH="${CIRCLE_BRANCH:-master}"
             echo "Sonar branch value is: $SONAR_BRANCH"
             echo "Sonar org value is: $SONAR_ORG"
+
             sonar-scanner \
               -Dsonar.projectKey=$SONAR_PROJECT_KEY \
               -Dsonar.organization=$SONAR_ORG \
               -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.login=$SONAR_TOKEN \
-              -Dsonar.sources=. \
+              -Dsonar.sources=backend,frontend \
+              -Dsonar.exclusions=**/node_modules/**,**/build/**,**/.vs/**,**/*.db,**/*.sqlite \
+              -Dsonar.tests=backend,test,frontend/test \
+              -Dsonar.test.exclusions=**/node_modules/**,**/build/**,**/.vs/** \
+              -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info,frontend/coverage/lcov.info \
               -Dsonar.branch.name=$SONAR_BRANCH \
-              -Dsonar.exclusions=/android/,/ios/** 
+              -Dsonar.sourceEncoding=UTF-8
 
 workflows:
   version: 2
