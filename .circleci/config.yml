@@ -66,7 +66,7 @@ jobs:
       - run:
           name: Run SonarCloud analysis (frontend)
           command: |
-            cd frontend
+            cd ../frontend
             sonar-scanner \
               -Dsonar.projectKey=github-Marli2002-Task2_INSY7314-frontend \
               -Dsonar.organization=marli2002 \
