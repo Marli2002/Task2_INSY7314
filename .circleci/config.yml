@@ -15,7 +15,6 @@ jobs:
           command: |
             cd backend
             npm install
-            npm install --save-dev sonar-scanner
       - save_cache:
           paths:
             - backend/node_modules
@@ -23,16 +22,6 @@ jobs:
       - run:
           name: Skip backend tests
           command: echo "Skipping backend tests (no test script defined)"
-      - run:
-          name: Run SonarCloud analysis (backend)
-          command: |
-            cd backend
-            npx sonar-scanner \
-              -Dsonar.projectKey=task2_backend \
-              -Dsonar.organization=Marli2002 \
-              -Dsonar.sources=. \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.login=$SONAR_TOKEN
 
   frontend-build:
     docker:
@@ -48,7 +37,6 @@ jobs:
           command: |
             cd frontend
             npm install
-            npm install --save-dev sonar-scanner
       - save_cache:
           paths:
             - frontend/node_modules
@@ -58,11 +46,27 @@ jobs:
           command: |
             cd frontend
             npm run build
+
+  sonarcloud-analysis:
+    docker:
+      - image: sonarsource/sonar-scanner-cli:latest
+    steps:
+      - checkout
+      - run:
+          name: Run SonarCloud analysis (backend)
+          command: |
+            cd backend
+            sonar-scanner \
+              -Dsonar.projectKey=task2_backend \
+              -Dsonar.organization=Marli2002 \
+              -Dsonar.sources=. \
+              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.login=$SONAR_TOKEN
       - run:
           name: Run SonarCloud analysis (frontend)
           command: |
             cd frontend
-            npx sonar-scanner \
+            sonar-scanner \
               -Dsonar.projectKey=task2_frontend \
               -Dsonar.organization=Marli2002 \
               -Dsonar.sources=. \
@@ -86,6 +90,10 @@ workflows:
     jobs:
       - backend-build
       - frontend-build
+      - sonarcloud-analysis:
+          requires:
+            - backend-build
+            - frontend-build
       - docker-build:
           requires:
             - backend-build
