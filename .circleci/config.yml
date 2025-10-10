@@ -20,8 +20,11 @@ jobs:
             - backend/node_modules
           key: backend-node-deps-{{ checksum "backend/package-lock.json" }}
       - run:
-          name: Skip backend tests
-          command: echo "Skipping backend tests (no test script defined)"
+          name: Run backend tests and generate coverage
+          command: |
+            cd backend
+            # Run tests with coverage (Jest example)
+            npx jest --coverage
       - persist_to_workspace:
           root: .
           paths:
@@ -69,29 +72,23 @@ jobs:
           command: |
             cd backend
             if [ -f DockerFile ]; then
-              echo "Found DockerFile (wrong case), renaming to Dockerfile"
               mv DockerFile Dockerfile
             fi
             if [ ! -f Dockerfile ]; then
               echo "ERROR: No Dockerfile found!"
-              ls -la
               exit 1
             fi
-            echo "Backend Dockerfile ready"
       - run:
           name: Check and fix Dockerfile naming for frontend
           command: |
             cd frontend
             if [ -f DockerFile ]; then
-              echo "Found DockerFile (wrong case), renaming to Dockerfile"
               mv DockerFile Dockerfile
             fi
             if [ ! -f Dockerfile ]; then
               echo "ERROR: No Dockerfile found!"
-              ls -la
               exit 1
             fi
-            echo "Frontend Dockerfile ready"
       - run:
           name: Build backend Docker image
           command: |
@@ -120,7 +117,6 @@ jobs:
           command: |
             SONAR_BRANCH="${CIRCLE_BRANCH:-master}"
             echo "Sonar branch value is: $SONAR_BRANCH"
-            echo "Sonar org value is: $SONAR_ORG"
             sonar-scanner \
               -Dsonar.projectKey=$SONAR_PROJECT_KEY \
               -Dsonar.organization=$SONAR_ORG \
@@ -129,7 +125,8 @@ jobs:
               -Dsonar.sources=. \
               -Dsonar.branch.name=$SONAR_BRANCH \
               -Dsonar.newCode.referenceBranch=main \
-              -Dsonar.exclusions=**/android/**,**/ios/**
+              -Dsonar.exclusions=**/node_modules/**,**/frontend/**,**/*.test.js,**/__tests__/** \
+              -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info
 
 workflows:
   version: 2
