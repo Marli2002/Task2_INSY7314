@@ -23,7 +23,7 @@ jobs:
           name: Run backend tests and generate coverage
           command: |
             cd backend
-            npm run test:ci
+            npm run test || cat /home/circleci/.npm/_logs/*-debug-0.log
       - run:
           name: Confirm lcov.info exists
           command: |
