@@ -33,7 +33,7 @@ const isStrongPassword = (password) =>
     minSymbols: 1
   });
 
-// Register
+// Register route
 router.post('/register', async (req, res) => {
   try {
     const username = sanitize(req.body.username?.trim());
@@ -71,7 +71,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login
+// Login route
 router.post('/login', async (req, res) => {
   try {
     const email = sanitize(req.body.email?.trim());
@@ -103,7 +103,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Logout
+// Logout route
 router.post('/logout', authMiddleware, async (req, res) => {
   try {
     let token = req.cookies?.accessToken || req.header('x-auth-token');
