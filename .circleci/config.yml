@@ -28,7 +28,7 @@ jobs:
             cd backend
             npx sonar-scanner \
               -Dsonar.projectKey=task2_backend \
-              -Dsonar.organization=<YOUR_SONARCLOUD_ORG> \
+              -Dsonar.organization=Marli2002 \
               -Dsonar.sources=. \
               -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.login=$SONAR_TOKEN
@@ -62,7 +62,7 @@ jobs:
             cd frontend
             npx sonar-scanner \
               -Dsonar.projectKey=task2_frontend \
-              -Dsonar.organization=<YOUR_SONARCLOUD_ORG> \
+              -Dsonar.organization=Marli2002 \
               -Dsonar.sources=. \
               -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.login=$SONAR_TOKEN
@@ -76,7 +76,7 @@ jobs:
       - run:
           name: Build Docker image
           command: |
-            docker build -t my-app:latest .
+            docker build -t task2_insy7314:latest .
 
 workflows:
   version: 2
