@@ -156,3 +156,10 @@ workflows:
           requires:
             - backend-build
             - frontend-build
+ 
+
+# References
+
+# CircleCI. n.d. Configuration reference (version 2.1). Retrieved October 10, 2025, from https://circleci.com/docs/configuration-reference 
+# FreeCodeCamp. 2024. APDS7311 – Setting up CircleCI and SonarQube [YouTube video]. Retrieved October 10, 2025, from https://youtu.be/I4CyzX5rhLU?si=qYrn3ATcG-1VYhcd 
+# SonarSource. n.d. Analyzing projects with SonarCloud and CircleCI.Retrieved October 10, 2025, from https://docs.sonarsource.com/sonarqube-cloud 

@@ -37,3 +37,11 @@ export function sanitizePaymentMethod(method) {
   const validMethods = ['card', 'bank', 'cash', 'paypal'];
   return validMethods.includes(method.toLowerCase()) ? method.toLowerCase() : null;
 }
+
+
+/*
+Reference:
+
+Mozilla Developer Network (MDN). n.d. Regular expressions. Retrieved October 10, 2025, from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+
+*/

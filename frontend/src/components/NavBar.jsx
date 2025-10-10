@@ -16,3 +16,10 @@ export default function NavBar() {
     </header>
   );
 }
+
+/*
+References
+
+React Router. n.d. React Router documentation. Retrieved October 10, 2025, from https://reactrouter.com/start/framework/navigating
+
+*/
