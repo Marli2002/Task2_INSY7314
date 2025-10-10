@@ -112,18 +112,17 @@ jobs:
       - attach_workspace:
           at: ~/workspace
       - run:
-          name: Get changed backend files via HTTPS
+          name: Fetch main branch via HTTPS
           command: |
             cd backend
-            # Ensure fetch uses HTTPS to avoid SSH prompt
             git remote set-url origin https://github.com/Marli2002/Task2_INSY7314.git
             git fetch origin main
             git diff --name-only origin/main...HEAD > changed_files.txt
             cat changed_files.txt
       - run:
-          name: Run SonarCloud scan for changed files only
+          name: Run SonarCloud scan (new code quality gate for small changes)
           command: |
-            SONAR_BRANCH="${CIRCLE_BRANCH:-main}"
+            SONAR_BRANCH="${CIRCLE_BRANCH:-master}"
             CHANGED_FILES=$(paste -sd "," backend/changed_files.txt)
             echo "Scanning only changed files: $CHANGED_FILES"
             sonar-scanner \
@@ -136,7 +135,9 @@ jobs:
               -Dsonar.branch.name=$SONAR_BRANCH \
               -Dsonar.newCode.referenceBranch=main \
               -Dsonar.exclusions=**/node_modules/**,**/frontend/**,**/*.test.js,**/__tests__/** \
-              -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info
+              -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info \
+              -Dsonar.qualitygate.wait=true \
+              -Dsonar.qualitygate.newCodeThreshold=20
 
 workflows:
   version: 2
