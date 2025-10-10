@@ -76,9 +76,10 @@ All data is stored in a MongoDB database, and communication between the frontend
 - Displays user’s payments and allows creation of new ones.
 
 **Example Pages**
-- `LoginPage.js` → User authentication
-- `RegisterPage.js` → Create new account
-- `PaymentsPage.js` → View and add payments
+- `LoginForm.jsx` → User authentication
+- `RegisterForm.jsx` → Create new account
+- `PaymentsList.jsx` → View Payments
+- `CreatePayment.jsx` → Add Payment
 
 ---
 
