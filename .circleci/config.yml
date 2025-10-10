@@ -115,7 +115,9 @@ jobs:
           name: Get changed backend files via HTTPS
           command: |
             cd backend
-            git fetch https://github.com/Marli2002/Task2_INSY7314.git main
+            # Ensure fetch uses HTTPS to avoid SSH prompt
+            git remote set-url origin https://github.com/Marli2002/Task2_INSY7314.git
+            git fetch origin main
             git diff --name-only origin/main...HEAD > changed_files.txt
             cat changed_files.txt
       - run:
