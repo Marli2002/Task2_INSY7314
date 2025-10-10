@@ -82,6 +82,11 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
+          name: Debug repo files
+          command: |
+            pwd
+            ls -R
+      - run:
           name: Build backend Docker image
           command: |
             docker build -f backend/Dockerfile -t task2_insy7314_backend:latest ./backend
