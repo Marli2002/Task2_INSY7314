@@ -63,14 +63,12 @@ jobs:
       - run:
           name: Create SonarCloud project properties for backend
           command: |
-            cat > sonar-project-backend.properties \<< EOF
-            sonar.projectKey=task2_backend
-            sonar.organization=marli2002
-            sonar.sources=backend
-            sonar.host.url=https://sonarcloud.io
-            sonar.projectName=Task2 Backend
-            sonar.projectVersion=1.0
-            EOF
+            echo "sonar.projectKey=task2_backend" > sonar-project-backend.properties
+            echo "sonar.organization=marli2002" >> sonar-project-backend.properties
+            echo "sonar.sources=backend" >> sonar-project-backend.properties
+            echo "sonar.host.url=https://sonarcloud.io" >> sonar-project-backend.properties
+            echo "sonar.projectName=Task2 Backend" >> sonar-project-backend.properties
+            echo "sonar.projectVersion=1.0" >> sonar-project-backend.properties
       - run:
           name: Run SonarCloud analysis (backend)
           command: |
@@ -78,7 +76,7 @@ jobs:
       - run:
           name: Create SonarCloud project properties for frontend
           command: |
-            cat > sonar-project-frontend.properties << EOF
+            cat > sonar-project-frontend.properties \<< EOF
             sonar.projectKey=task2_frontend
             sonar.organization=marli2002
             sonar.sources=frontend/src
@@ -147,4 +145,3 @@ workflows:
           requires:
             - backend-build
             - frontend-build
-            
