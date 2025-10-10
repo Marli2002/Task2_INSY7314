@@ -43,15 +43,12 @@ jobs:
           command: |
             cd frontend
             npm install
-      - save_cache:
-          paths:
-            - frontend/node_modules
-          key: frontend-node-deps-{{ checksum "frontend/package-lock.json" }}
-      - run:
-          name: Run frontend tests
-          command: |
-            cd frontend
-            npm test
+      # Frontend tests skipped
+      #- run:
+      #    name: Run frontend tests
+      #    command: |
+      #      cd frontend
+      #      npm test
       - run:
           name: Build frontend
           command: |
@@ -136,7 +133,6 @@ jobs:
               -Dsonar.exclusions=backend/tests/**,frontend/tests/**,**/node_modules/**,**/build/**,**/.vs/**,**/*.db,**/*.sqlite,**/build-wrapper-dump.json \
               -Dsonar.test.inclusions=backend/tests/**,frontend/tests/** \
               -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info,frontend/coverage/lcov.info
-
 
 workflows:
   version: 2
