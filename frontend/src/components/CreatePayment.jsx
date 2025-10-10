@@ -4,6 +4,7 @@ import axios from "axios";
 import { sanitizeInput, sanitizeAmount, sanitizePaymentMethod } from "../utils/sanitize";
 import './Page.css';
 
+// Create Payment Component
 export default function CreatePayment() {
   const [customerName, setCustomerName] = useState("");
   const [amount, setAmount] = useState("");
@@ -12,6 +13,7 @@ export default function CreatePayment() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -21,6 +23,7 @@ export default function CreatePayment() {
     const cleanAmount = sanitizeAmount(amount);
     const cleanMethod = sanitizePaymentMethod(paymentMethod);
 
+    // Basic validation
     if (!/^[a-zA-Z ]{2,50}$/.test(cleanName)) {
       setError("Customer name must be 2-50 letters only.");
       setLoading(false);

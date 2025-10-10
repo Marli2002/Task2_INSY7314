@@ -4,6 +4,7 @@ import axios from "axios";
 import { sanitizeEmail } from "../utils/sanitize";
 import './Form.css';
 
+// Login Form Component
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,6 +32,7 @@ export default function LoginForm() {
       return;
     }
 
+    // Login user
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, {
         email: cleanEmail,

@@ -4,6 +4,7 @@ import axios from "axios";
 import { sanitizeUsername, sanitizeEmail, sanitizePassword } from "../utils/sanitize";
 import './Form.css';
 
+// Register Form Component
 export default function RegisterForm() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -12,6 +13,7 @@ export default function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");

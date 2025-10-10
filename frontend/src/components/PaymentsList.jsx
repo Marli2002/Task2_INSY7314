@@ -11,12 +11,14 @@ const sanitizeString = (str) => {
   return str;
 };
 
+// Payments List Component
 export default function PaymentsList() {
   const [payments, setPayments] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Fetch payments on component mount
   useEffect(() => {
     const fetchPayments = async () => {
       setError("");
