@@ -9,6 +9,8 @@ const cookieParser = require('cookie-parser');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const connectDB = require('./config/db');
+const adminAuthRoutes = require('./routes/adminAuth');
+const employeeAuthRoutes = require('./routes/employeeAuth');
 
 //  Connect to MongoDB 
 connectDB();
@@ -54,6 +56,12 @@ app.use((req, res, next) => {
 //  Routes 
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/payment', require('./routes/payment'));
+
+app.use('/api/employee', require('./routes/employee')); // Employee routes
+app.use('/api/admin', require('./routes/admin'));       // Admin routes
+// Employee authentication routes
+app.use('/api/employee/auth', require('./routes/employeeAuth'));
+app.use('/api/admin/auth', require('./routes/adminAuth'));
 
 // HTTPS Setup 
 const sslOptions = {
