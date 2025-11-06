@@ -9,9 +9,9 @@ body, html, #root {
 
 .full-page {
   display: flex;
-  justify-content: center; /* horizontal center */
-  align-items: center;     /* vertical center */
-  height: calc(100% - 60px); /* adjust for navbar if any */
+  justify-content: center; 
+  align-items: center;   
+  height: calc(100% - 60px);
 }
 
 /* Generic form container for login/register/create forms */
@@ -50,7 +50,7 @@ body, html, #root {
   padding: 10px 20px;
   border-radius: 8px;
   border: none;
-  background-color: #56b267;
+  background-color: #28a745;
   color: white;
   font-weight: bold;
   cursor: pointer;

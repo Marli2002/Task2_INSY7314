@@ -35,7 +35,7 @@ exports.createEmployee = async (req, res) => {
         const existing = await Employee.findOne({ email });
         if (existing) return res.status(400).json({ message: 'Email already exists' });
 
-        // Create employee (password will be hashed automatically by pre-save hook)
+        // Create employee (password will be hashed automatically by hook)
         const employee = await Employee.create({ username, email, password, role });
 
         res.status(201).json({ 
