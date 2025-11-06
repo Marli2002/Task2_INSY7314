@@ -1,16 +1,27 @@
-# 💳 Secure Payment Management System (Task 2 – INSY7314 POE)
+# 💳 Secure Payment Management System (Task 3 – INSY7314 POE)
 
-This project is a secure full-stack web application built for the INSY7314 Proof of Evidence (POE).  
-It demonstrates strong implementation of backend security, frontend input validation, and DevSecOps automation using modern tools and best practices.
+This project builds on the secure full-stack web application from **Part 2** of the INSY7314 Portfolio of Evidence.  
+Part 3 extends the system with an **Employee & Admin Portal**, full **Docker Compose orchestration**, and refined **DevSecOps** automation.
+
+
+## 👥 Team Information
+
+| Name | Student Number | Role |
+|------|----------------|------|
+| Anke Bekker | ST10252399 | Frontend Developer |
+| Marli van Zyl | ST10320126 | Backend / DevSecOps |
+| Michke van der Merwe | ST10057020 | Documentation / Testing / Compliance |
+
 
 ## 🧠 Overview
 
-The system allows users to:
+The system now consists of three secure components:
+1. **Customer Portal** – customers register, log in, and create payment requests.
+2. **Employee Portal** – employees view pending payments and approve/deny them.
+3. **Admin Portal** – super admin manages employee accounts.
 
-- Register, log in, and log out securely.
-- Create new payment entries and view their existing payments.
+All services communicate securely via **HTTPS (SSL)**, share a **MongoDB** backend, and are containerized using **Docker Compose**.
 
-All data is stored in a MongoDB database, and communication between the frontend and backend happens securely via HTTPS (SSL).
 
 ## 🛠️ Technologies Used
 
@@ -180,7 +191,3 @@ This project demonstrates:
   - Strong security implementation using best practices for hashing, HTTPS, and    input sanitization.
   - Integration of a DevSecOps pipeline using CircleCI, SonarCloud, and Docker,  ensuring continuous delivery and automated security scanning.
 
-### 👩‍💻 Developed By
-  - Team: Anke Bekker, Marli van Zyl, Michke van der Merwe
-  - Module: INSY7314
-  - Lecturer: Glynn Rudman
