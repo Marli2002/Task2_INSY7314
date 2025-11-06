@@ -10,6 +10,8 @@ import EmployeePendingPayments from "./components/EmployeePendingPayments.jsx";
 import EmployeePaymentHistory from "./components/EmployeePaymentHistory.jsx";  
 
 import AdminDashboard from "./components/AdminDashboard.jsx";
+import AdminCreateEmployee from "./components/AdminCreateEmployee.jsx";
+import AdminEmployeeList from "./components/AdminEmployeeList.jsx";
 
 
 function App() {
@@ -32,6 +34,8 @@ function App() {
 
         {/* Admin Routes */}
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/employees/create" element={<AdminCreateEmployee />} />
+        <Route path="/admin/employees" element={<AdminEmployeeList />} />
       </Routes>
     </Router>
   );

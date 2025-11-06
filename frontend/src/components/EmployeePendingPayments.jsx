@@ -1,44 +1,45 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"; 
+import { useNavigate } from "react-router-dom";   // ✅ ADD THIS
 import axios from "axios";
 
 export default function EmployeePendingPayments() {
-  const [payments, setPayments] = useState([]);
+  const [pending, setPending] = useState([]);
+  const [error, setError] = useState("");
   const token = localStorage.getItem("token");
+  const navigate = useNavigate(); // ✅ ADD THIS
 
   useEffect(() => {
-    fetchPendingPayments();
+    fetchPending();
   }, []);
 
-  const fetchPendingPayments = async () => {
+  const fetchPending = async () => {
+    setError("");
     try {
-      const response = await axios.get("http://localhost:5000/api/payments/pending", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setPayments(response.data);
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/employee/payments/pending`,
+        {
+          headers: { "x-auth-token": token }
+        }
+      );
+      setPending(response.data);
     } catch (error) {
       console.error("Error fetching pending payments:", error);
+      setError("Failed to load pending payments.");
     }
   };
 
-  const handleApprove = async (paymentId) => {
+  const updateStatus = async (id, newStatus) => {
     try {
-      await axios.patch(`http://localhost:5000/api/payments/${paymentId}/approve`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      fetchPendingPayments(); // refresh list
+      await axios.put(
+        `${import.meta.env.VITE_API_URL}/employee/payments/${id}/status`,
+        { status: newStatus },
+        {
+          headers: { "x-auth-token": token }
+        }
+      );
+      fetchPending();
     } catch (error) {
-      console.error("Error approving:", error);
-    }
-  };
-
-  const handleDeny = async (paymentId) => {
-    try {
-      await axios.patch(`http://localhost:5000/api/payments/${paymentId}/deny`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      fetchPendingPayments(); // refresh list
-    } catch (error) {
-      console.error("Error denying:", error);
+      console.error("Error updating payment status:", error);
     }
   };
 
@@ -46,29 +47,48 @@ export default function EmployeePendingPayments() {
     <div className="page-container">
       <h2>Pending Payments</h2>
 
-      {payments.length === 0 ? (
-        <p>No pending payments.</p>
+      {/* ✅ NEW BUTTON HERE */}
+      <button
+  className="secondary-btn"
+  style={{ marginBottom: "15px" }}
+  onClick={() => navigate("/employee/history")} // <-- updated
+>
+  View Payment History
+</button>
+
+
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      {pending.length === 0 ? (
+        <p>No payments waiting for approval.</p>
       ) : (
         <table className="table">
           <thead>
             <tr>
-              <th>User</th>
+              <th>Customer</th>
               <th>Amount</th>
-              <th>Description</th>
-              <th>Submitted At</th>
-              <th>Actions</th>
+              <th>Method</th>
+              <th>Status</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {payments.map(payment => (
+            {pending.map(payment => (
               <tr key={payment._id}>
-                <td>{payment.user?.email}</td>
+                <td>{payment.customerName}</td>
                 <td>R{payment.amount}</td>
-                <td>{payment.description}</td>
-                <td>{new Date(payment.createdAt).toLocaleString()}</td>
+                <td>{payment.paymentMethod}</td>
+                <td>{payment.status}</td>
                 <td>
-                  <button onClick={() => handleApprove(payment._id)} className="approve-btn">Approve</button>
-                  <button onClick={() => handleDeny(payment._id)} className="deny-btn">Deny</button>
+                  <button onClick={() => updateStatus(payment._id, "approved")}>
+                    ✅ Approve
+                  </button>
+                  <button
+                    onClick={() => updateStatus(payment._id, "denied")}
+                    style={{ marginLeft: "8px" }}
+                  >
+                    ❌ Deny
+                  </button>
                 </td>
               </tr>
             ))}

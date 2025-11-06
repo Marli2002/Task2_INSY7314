@@ -3,6 +3,8 @@ import axios from "axios";
 
 export default function EmployeePaymentHistory() {
   const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -10,13 +12,23 @@ export default function EmployeePaymentHistory() {
   }, []);
 
   const fetchHistory = async () => {
+    setError("");
+    setLoading(true);
+
     try {
-      const response = await axios.get("http://localhost:5000/api/payments/history", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/employee/payments/history`,
+        {
+          headers: { "x-auth-token": token }
+        }
+      );
+
       setHistory(response.data);
-    } catch (error) {
-      console.error("Error fetching history:", error);
+    } catch (err) {
+      console.error("Error fetching payment history:", err);
+      setError("Failed to load payment history.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -24,25 +36,29 @@ export default function EmployeePaymentHistory() {
     <div className="page-container">
       <h2>Payment History</h2>
 
-      {history.length === 0 ? (
-        <p>No payment history available.</p>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      {loading ? (
+        <p>Loading payment history...</p>
+      ) : history.length === 0 ? (
+        <p>No approved or denied payments yet.</p>
       ) : (
         <table className="table">
           <thead>
             <tr>
               <th>User</th>
               <th>Amount</th>
-              <th>Description</th>
+              <th>Method</th>
               <th>Status</th>
-              <th>Updated At</th>
+              <th>Updated</th>
             </tr>
           </thead>
           <tbody>
-            {history.map(payment => (
+            {history.map((payment) => (
               <tr key={payment._id}>
-                <td>{payment.user?.email}</td>
+                <td>{payment.customerName}</td>
                 <td>R{payment.amount}</td>
-                <td>{payment.description}</td>
+                <td>{payment.paymentMethod}</td>
                 <td>{payment.status}</td>
                 <td>{new Date(payment.updatedAt).toLocaleString()}</td>
               </tr>
