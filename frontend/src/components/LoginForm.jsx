@@ -17,7 +17,7 @@ export default function LoginForm() {
     setError("");
     setLoading(true);
 
-    // Sanitize email
+    // Sanitize inputs
     const cleanEmail = sanitizeEmail(email);
     const cleanPassword = password.trim();
 
@@ -32,21 +32,33 @@ export default function LoginForm() {
       return;
     }
 
-    // Login user
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, {
-        email: cleanEmail,
-        password: cleanPassword
-      });
+      // Login request with cookies
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/auth/login`,
+        { email: cleanEmail, password: cleanPassword },
+        { withCredentials: true } // ✅ send cookies
+      );
 
+      // Store JWT and user info in localStorage
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
 
+      // Redirect based on role
+      // Redirect based on role
+const role = response.data.user.role;
+if (role === "admin") {
+  navigate("/admin/dashboard");        
+} else if (role === "employee") {
+  navigate("/employee/pending");       
+} else {
+  navigate("/payments/create");       
+}
+
       alert("Logged in successfully!");
-      navigate("/payments/create");
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.msg || "Login failed. Please try again.");
+      setError(err.response?.data?.message || "Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -78,6 +90,7 @@ export default function LoginForm() {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
+
         <button className="secondary-btn" onClick={() => navigate("/register")}>
           Register
         </button>
@@ -85,6 +98,7 @@ export default function LoginForm() {
     </div>
   );
 }
+
 
 
 /*

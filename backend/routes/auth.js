@@ -3,6 +3,7 @@ const router = express.Router();
 const validator = require('validator');
 const sanitize = require('mongo-sanitize');
 const User = require('../models/User');
+const Employee = require('../models/Employee');
 const jwt = require('jsonwebtoken');
 const TokenBlacklist = require('../models/TokenBlacklist');
 const authMiddleware = require('../middleware/auth');
@@ -72,6 +73,7 @@ router.post('/register', async (req, res) => {
 });
 
 // Login route
+// Login route (supports users, employees, admins)
 router.post('/login', async (req, res) => {
   try {
     const email = sanitize(req.body.email?.trim());
@@ -82,13 +84,22 @@ router.post('/login', async (req, res) => {
 
     if (!password) return res.status(400).json({ message: 'Password required' });
 
-    const user = await User.findOne({ email });
-    if (!user) return res.status(401).json({ message: 'Invalid credentials' });
+    // Check in User collection first (regular users)
+    let account = await User.findOne({ email });
+    let role = 'user';
 
-    const isMatch = await user.matchPassword(password);
+    // If not found, check Employee collection (employees & admins)
+    if (!account) {
+      account = await Employee.findOne({ email });
+      role = account?.role || null; // 'employee' or 'admin'
+    }
+
+    if (!account) return res.status(401).json({ message: 'Invalid credentials' });
+
+    const isMatch = await account.matchPassword(password);
     if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
 
-    const token = generateToken(user._id);
+    const token = generateToken(account._id);
     res.cookie('accessToken', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -96,12 +107,22 @@ router.post('/login', async (req, res) => {
       maxAge: 60 * 60 * 1000,
     });
 
-    res.json({ user: { id: user._id, username: user.username, email }, token });
+    res.json({
+      user: {
+        id: account._id,
+        username: account.username,
+        email: account.email,
+        role,
+      },
+      token,
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+
 
 // Logout route
 router.post('/logout', authMiddleware, async (req, res) => {

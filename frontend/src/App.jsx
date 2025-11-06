@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavBar from "./components/NavBar.jsx";
 import LoginForm from "./components/LoginForm.jsx";
@@ -7,17 +6,32 @@ import Logout from "./components/Logout.jsx";
 import PaymentsList from "./components/PaymentsList.jsx";
 import CreatePayment from "./components/CreatePayment.jsx";
 
+import EmployeePendingPayments from "./components/EmployeePendingPayments.jsx";
+import EmployeePaymentHistory from "./components/EmployeePaymentHistory.jsx";  
+
+import AdminDashboard from "./components/AdminDashboard.jsx";
+
+
 function App() {
   return (
     <Router>
-      <NavBar />  {/* Navigation always visible */}
+      <NavBar />
       <Routes>
         <Route path="/" element={<LoginForm />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/logout" element={<Logout />} />
+
+        {/* User Routes */}
         <Route path="/payments/create" element={<CreatePayment />} />
         <Route path="/payments" element={<PaymentsList />} />
+
+        {/* Employee Routes */}
+        <Route path="/employee/pending" element={<EmployeePendingPayments />} />
+        <Route path="/employee/history" element={<EmployeePaymentHistory />} />
+
+        {/* Admin Routes */}
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
       </Routes>
     </Router>
   );

@@ -1,27 +1,41 @@
+const express = require('express');
+const router = express.Router();
+const validator = require('validator');
+const sanitize = require('mongo-sanitize');
 const User = require('../models/User');
+const Employee = require('../models/Employee');
 const jwt = require('jsonwebtoken');
 const TokenBlacklist = require('../models/TokenBlacklist');
-const sanitize = require('mongo-sanitize');
-const validator = require('validator');
+const authMiddleware = require('../middleware/auth');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
-// Generate JWT token
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-};
+// Security headers
+router.use(helmet());
+
+// Rate limiting for login/register
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: "Too many requests, try again later."
+});
+router.use(['/login', '/register'], authLimiter);
+
+// JWT generator
+const generateToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
 // Strong password check
-const isStrongPassword = (password) => {
-  return validator.isStrongPassword(password, {
+const isStrongPassword = (password) =>
+  validator.isStrongPassword(password, {
     minLength: 8,
     minLowercase: 1,
     minUppercase: 1,
     minNumbers: 1,
-    minSymbols: 1,
+    minSymbols: 1
   });
-};
 
-// Register user
-exports.register = async (req, res) => {
+// Register route
+router.post('/register', async (req, res) => {
   try {
     const username = sanitize(req.body.username?.trim());
     const email = sanitize(req.body.email?.trim());
@@ -36,15 +50,12 @@ exports.register = async (req, res) => {
     if (!password || !isStrongPassword(password))
       return res.status(400).json({ message: 'Password not strong enough' });
 
-    // Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser)
       return res.status(400).json({ message: 'User already exists' });
 
-    // Pass raw password (model will hash it)
     const user = await User.create({ username, email, password });
 
-    // Generate JWT
     const token = generateToken(user._id);
     res.cookie('accessToken', token, {
       httpOnly: true,
@@ -53,32 +64,38 @@ exports.register = async (req, res) => {
       maxAge: 60 * 60 * 1000,
     });
 
-    res.status(201).json({ user: { id: user._id, username, email }, token });
+    res.status(201).json({ user: { id: user._id, username, email, role: 'user' }, token });
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ message: 'Server error' });
   }
-};
+});
 
-// Login user
-exports.login = async (req, res) => {
+// Login route
+router.post('/login', async (req, res) => {
   try {
     const email = sanitize(req.body.email?.trim());
     const password = req.body.password;
 
     if (!email || !validator.isEmail(email))
       return res.status(400).json({ message: 'Invalid email' });
-
     if (!password) return res.status(400).json({ message: 'Password required' });
 
-    const user = await User.findOne({ email });
-    if (!user) return res.status(401).json({ message: 'Invalid credentials' });
+    let account = await User.findOne({ email });
+    let role = 'user';
 
-    // Compare password using bcrypt
-    const isMatch = await user.matchPassword(password);
+    if (!account) {
+      account = await Employee.findOne({ email });
+      if (account) role = account.role; // 'employee' or 'admin'
+    }
+
+    if (!account) return res.status(401).json({ message: 'Invalid credentials' });
+
+    const isMatch = await account.matchPassword(password);
     if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
 
-    const token = generateToken(user._id);
+    const token = jwt.sign({ id: account._id, role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
     res.cookie('accessToken', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -86,16 +103,25 @@ exports.login = async (req, res) => {
       maxAge: 60 * 60 * 1000,
     });
 
-    res.json({ user: { id: user._id, username: user.username, email }, token });
+    res.json({
+      user: {
+        id: account._id,
+        username: account.username,
+        email: account.email,
+        role,
+      },
+      token,
+    });
+
   } catch (err) {
-    console.error(err.message);
+    console.error(err);
     res.status(500).json({ message: 'Server error' });
   }
-};
+});
 
 
-// Logout user
-exports.logout = async (req, res) => {
+// Logout route
+router.post('/logout', authMiddleware, async (req, res) => {
   try {
     let token = req.cookies?.accessToken || req.header('x-auth-token');
     if (!token) return res.status(400).json({ message: 'No token provided' });
@@ -117,7 +143,10 @@ exports.logout = async (req, res) => {
     console.error(err.message);
     res.status(500).json({ message: 'Server error' });
   }
-};
+});
+
+module.exports = router;
+
 
 /*
 References:
