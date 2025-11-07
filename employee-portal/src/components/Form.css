@@ -1,122 +1,243 @@
-/* src/components/Form.css or index.css */ 
-
-body, html, #root {
-  height: 100%;
+/* Global reset */
+body, html {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #f0f2f5; /* light background */
-}
-
-.full-page {
-  display: flex;
-  justify-content: center; 
-  align-items: center;   
-  height: calc(100% - 60px);
-}
-
-/* Generic form container for login/register/create forms */
-.form-container {
+  padding: 0;
   width: 100%;
-  max-width: 400px;
-  padding: 30px;
-  background-color: #f5f5f5;
-  border-radius: 12px;
-  box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-  text-align: center;
+  height: 100%;
 }
 
-.form-container h2 {
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* For login/register pages - centered forms */
+.page.full-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: #f9f9f9;
+  width: 100%;
+}
+
+/* Login/Register form wrapper */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: #f9f9f9;
+  width: 100%;
+}
+
+/* For table/list pages - full width with navbar */
+.full-page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f9f9f9;
+}
+
+/* Container for payment tables */
+.payments-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.payments-container h2 {
   margin-bottom: 20px;
   color: #333;
 }
 
-.form-container label {
-  display: block;
-  margin-top: 10px;
-  margin-bottom: 5px;
-  font-weight: bold;
-  text-align: left;
-}
-
-.form-container input {
-  width: 100%;
-  padding: 8px 10px;
+.error-msg {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 12px;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  margin-bottom: 20px;
+  border-left: 4px solid #c62828;
 }
 
-.form-container button {
-  margin-top: 15px;
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  background-color: #28a745;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
+/* Payment table styles */
+.payments-table {
   width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.payments-table thead {
+  background-color: #004466;
+  color: white;
+}
+
+.payments-table th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.payments-table td {
+  padding: 15px;
+  border-bottom: 1px solid #e0e0e0;
+  color: #333;
+}
+
+.payments-table tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+.payments-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Action buttons in table */
+.payments-table button {
+  padding: 8px 16px;
+  margin-right: 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
   transition: background-color 0.2s;
 }
 
-.form-container button:hover {
-  background-color: #56b267;
+.payments-table button:first-of-type {
+  background-color: #4caf50;
+  color: white;
+}
+
+.payments-table button:first-of-type:hover {
+  background-color: #45a049;
+}
+
+.payments-table button:last-of-type {
+  background-color: #f44336;
+  color: white;
+}
+
+.payments-table button:last-of-type:hover {
+  background-color: #da190b;
+}
+
+.form-section {
+  width: 100%;
+  max-width: 400px; 
+  padding: 30px;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.form-section h2 {
+  margin-bottom: 20px;
+  color: #004466;
+  text-align: center;
+}
+
+.classic-form label {
+  display: block;
+  margin: 10px 0 5px;
+  font-weight: bold;
+  color: #333;
+}
+
+.classic-form input,
+.classic-form select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+.classic-form input:focus,
+.classic-form select:focus {
+  outline: none;
+  border-color: #004466;
+  box-shadow: 0 0 0 2px rgba(0, 68, 102, 0.1);
+}
+
+.classic-form button {
+  width: 100%;
+  padding: 12px 0;
+  border: none;
+  border-radius: 6px;
+  background-color: #004466;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.classic-form button:hover {
+  background-color: #006699;
+}
+
+.classic-form button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.classic-form .error-msg {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.classic-form .success-msg {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.form-footer {
+  text-align: center;
+  margin-top: 20px;
+  color: #666;
+  font-size: 14px;
+}
+
+.form-footer a {
+  color: #004466;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.form-footer a:hover {
+  text-decoration: underline;
 }
 
 .secondary-btn {
+  display: block;
   background-color: #888;
+  color: white;
+  margin: 20px auto 0;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
 .secondary-btn:hover {
   background-color: #555;
 }
-
-/* Payments table specific styling */
-.payments-container {
-  width: 90%;
-  max-width: 1200px;
-  margin: 2rem auto; /* center & spacing */
-  padding: 1rem 2rem;
-  background-color: #f5f5f5;
-  border-radius: 12px;
-  box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-}
-
-.payments-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 1rem;
-}
-
-.payments-table th,
-.payments-table td {
-  border: 1px solid #ccc;
-  padding: 0.75rem 1rem;
-  text-align: left;
-}
-
-.payments-table th {
-  background-color: #f0f0f0;
-  font-weight: 600;
-}
-
-.payments-table tr:nth-child(even) {
-  background-color: #fafafa;
-}
-
-.payments-table tr:hover {
-  background-color: #e6f7ff;
-}
-
-/* Error message */
-.error-msg {
-  color: red;
-  margin-bottom: 1rem;
-  font-weight: bold;
-}
-
-
-/*
-Reference
-
-Mozilla Developer Network (MDN). n.d. CSS: Cascading Style Sheets. Retrieved October 10, 2025, from https://developer.mozilla.org/en-US/docs/Web/CSS
-*/

@@ -1,3 +1,25 @@
+/* Reset any potential parent constraints */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Force full width on body and html */
+html, body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Force full width on root React element */
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .site-header {
   display: flex;
   justify-content: space-between;
@@ -8,6 +30,12 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+  width: 100vw; /* Use viewport width instead */
+  max-width: 100%;
+  left: 0;
+  right: 0;
+  margin: 0; /* Remove any margin */
+  box-sizing: border-box;
 }
 
 .site-header .logo {
@@ -18,12 +46,14 @@
 .site-header nav {
   display: flex;
   gap: 20px;
+  align-items: center;
 }
 
 .nav-link {
   color: white;
   text-decoration: none;
   font-weight: 500;
+  white-space: nowrap; /* Prevent text wrapping */
 }
 
 .nav-link:hover {

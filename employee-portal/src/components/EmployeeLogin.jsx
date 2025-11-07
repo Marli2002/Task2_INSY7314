@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import './Form.css';
 
-
 // Employee/Admin Login Form Component
 export default function EmployeeLogin() {
   const [email, setEmail] = useState("");
@@ -79,26 +78,30 @@ export default function EmployeeLogin() {
   };
 
   return (
-    <div className="full-page">
-      <div className="form-container">
+    <div className="auth-page">
+      <div className="form-section">
         <h2>Employee/Admin Login</h2>
-        <p style={{ fontSize: '0.9em', color: '#666', marginBottom: '1rem' }}>
+        <p style={{ fontSize: '0.9em', color: '#666', marginBottom: '1rem', textAlign: 'center' }}>
           This portal is for employees and administrators only.
         </p>
-        {error && <p className="error-msg">{error}</p>}
-        <form onSubmit={handleSubmit}>
-          <label>Email</label>
+        
+        <form className="classic-form" onSubmit={handleSubmit}>
+          {error && <div className="error-msg">{error}</div>}
+          
+          <label htmlFor="email">Email</label>
           <input
             type="email"
+            id="email"
             value={email}
             onChange={e => setEmail(e.target.value)}
             placeholder="employee@example.com"
             required
           />
 
-          <label>Password</label>
+          <label htmlFor="password">Password</label>
           <input
             type="password"
+            id="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
@@ -116,8 +119,6 @@ export default function EmployeeLogin() {
     </div>
   );
 }
-
-
 
 /*
 References
