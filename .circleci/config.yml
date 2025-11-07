@@ -6,34 +6,28 @@ jobs:
       - image: cimg/node:20.0
     steps:
       - checkout
-
       - restore_cache:
           keys:
             - backend-node-deps-{{ checksum "backend/package-lock.json" }}
             - backend-node-deps-
-
       - run:
           name: Install backend dependencies
           command: |
             cd backend
             npm install
-
       - save_cache:
           paths:
             - backend/node_modules
           key: backend-node-deps-{{ checksum "backend/package-lock.json" }}
-
       - run:
           name: Run backend tests and coverage
           command: |
             cd backend
             npm run test || cat /home/circleci/.npm/_logs/*-debug-0.log
-
       - run:
           name: Verify lcov.info exists
           command: |
             ls -la backend/coverage/lcov.info
-
       - persist_to_workspace:
           root: .
           paths:
@@ -44,29 +38,24 @@ jobs:
       - image: cimg/node:20.0
     steps:
       - checkout
-
       - restore_cache:
           keys:
             - frontend-node-deps-{{ checksum "frontend/package-lock.json" }}
             - frontend-node-deps-
-
       - run:
           name: Install frontend dependencies
           command: |
             cd frontend
             npm install
-
       - save_cache:
           paths:
             - frontend/node_modules
           key: frontend-node-deps-{{ checksum "frontend/package-lock.json" }}
-
       - run:
           name: Build frontend
           command: |
             cd frontend
             npm run build
-
       - persist_to_workspace:
           root: .
           paths:
@@ -77,29 +66,24 @@ jobs:
       - image: cimg/node:20.0
     steps:
       - checkout
-
       - restore_cache:
           keys:
             - employee-portal-node-deps-{{ checksum "employee-portal/package-lock.json" }}
             - employee-portal-node-deps-
-
       - run:
           name: Install employee portal dependencies
           command: |
             cd employee-portal
             npm install
-
       - save_cache:
           paths:
             - employee-portal/node_modules
           key: employee-portal-node-deps-{{ checksum "employee-portal/package-lock.json" }}
-
       - run:
           name: Build employee portal
           command: |
             cd employee-portal
             npm run build
-
       - persist_to_workspace:
           root: .
           paths:
@@ -112,10 +96,8 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
-
       - setup_remote_docker:
           docker_layer_caching: true
-
       - run:
           name: Check Dockerfiles exist
           command: |
@@ -125,7 +107,6 @@ jobs:
                 exit 1
               fi
             done
-
       - run:
           name: Build backend Docker image
           command: |
@@ -136,7 +117,6 @@ jobs:
             else
               docker build -f backend/dockerfile -t task2_insy7314_backend:latest ./backend
             fi
-
       - run:
           name: Build frontend Docker image
           command: |
@@ -147,7 +127,6 @@ jobs:
             else
               docker build -f frontend/dockerfile -t task2_insy7314_frontend:latest ./frontend
             fi
-
       - run:
           name: Build employee portal Docker image
           command: |
@@ -158,7 +137,6 @@ jobs:
             else
               docker build -f employee-portal/dockerfile -t task2_insy7314_employee_portal:latest ./employee-portal
             fi
-
       - run:
           name: List built Docker images
           command: docker images
@@ -172,21 +150,19 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/workspace
-
       - run:
-        name: SonarCloud scan
-        command: |
-          sonar-scanner \
-            -Dsonar.projectKey=$SONAR_PROJECT_KEY \
-            -Dsonar.organization=$SONAR_ORG \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.token=$SONAR_TOKEN \
-            -Dsonar.sources=backend,frontend,employee-portal \
-            -Dsonar.tests=backend/tests \
-            -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info \
-            -Dsonar.exclusions=backend/.vs/**,frontend/**,employee-portal/**,**/node_modules/**,**/build/** \
-            -Dsonar.test.inclusions=backend/tests/**
-
+          name: SonarCloud scan
+          command: |
+            sonar-scanner \
+              -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+              -Dsonar.organization=$SONAR_ORG \
+              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.token=$SONAR_TOKEN \
+              -Dsonar.sources=backend,frontend,employee-portal \
+              -Dsonar.tests=backend/tests \
+              -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info \
+              -Dsonar.exclusions=backend/.vs/**,frontend/**,employee-portal/**,**/node_modules/**,**/build/** \
+              -Dsonar.test.inclusions=backend/tests/**
 
 workflows:
   version: 2
@@ -195,13 +171,11 @@ workflows:
       - backend-build
       - frontend-build
       - employee-portal-build
-
       - docker-build:
           requires:
             - backend-build
             - frontend-build
             - employee-portal-build
-
       - sonarqube:
           requires:
             - backend-build
