@@ -25,9 +25,7 @@ export default function EmployeePaymentHistory() {
 
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/payment/history`,
-          {
-            headers: { "x-auth-token": token }
-          }
+          { headers: { "x-auth-token": token } }
         );
 
         const sanitizedPayments = response.data.map(p => ({
@@ -53,43 +51,42 @@ export default function EmployeePaymentHistory() {
   }, [navigate]);
 
   return (
-      <div className="page-content">
-        <div className="payments-container">
-          <h2>Payment History</h2>
-          {error && <p className="error-msg">{error}</p>}
+    <div className="page-content">
+      <div className="payments-container">
+        <h2>Payment History</h2>
+        {error && <p className="error-msg">{error}</p>}
 
-          {loading ? (
-            <p>Loading payment history...</p>
-          ) : payments.length === 0 ? (
-            <p>No approved or denied payments found.</p>
-          ) : (
-            <table className="payments-table">
-              <thead>
-                <tr>
-                  <th>Customer Name</th>
-                  <th>Amount (R)</th>
-                  <th>Payment Method</th>
-                  <th>Status</th>
-                  <th>Updated At</th>
-                  <th>User</th>
+        {loading ? (
+          <p>Loading payment history...</p>
+        ) : payments.length === 0 ? (
+          <p>No approved or denied payments found.</p>
+        ) : (
+          <table className="payments-table">
+            <thead>
+              <tr>
+                <th>Customer Name</th>
+                <th>Amount (R)</th>
+                <th>Payment Method</th>
+                <th>Status</th>
+                <th>Updated At</th>
+                <th>User</th>
+              </tr>
+            </thead>
+            <tbody>
+              {payments.map((p) => (
+                <tr key={p._id}>
+                  <td>{p.customerName}</td>
+                  <td>{`R ${p.amount.toFixed(2)}`}</td>
+                  <td>{p.paymentMethod}</td>
+                  <td>{p.status}</td>
+                  <td>{p.updatedAt}</td>
+                  <td>{p.user ? `${p.user.username} (${p.user.email})` : "N/A"}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {payments.map((p) => (
-                  <tr key={p._id}>
-                    <td>{p.customerName}</td>
-                    <td>{`R ${p.amount.toFixed(2)}`}</td>
-                    <td>{p.paymentMethod}</td>
-                    <td>{p.status}</td>
-                    <td>{p.updatedAt}</td>
-                    <td>{p.user ? `${p.user.username} (${p.user.email})` : "N/A"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
-    
+    </div>
   );
 }

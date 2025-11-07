@@ -3,7 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Form.css";
 
-const sanitizeString = (str) => (typeof str === "string" ? str.replace(/[$.]/g, "").trim() : "");
+const sanitizeString = (str) =>
+  typeof str === "string" ? str.replace(/[$.]/g, "").trim() : "";
 
 export default function EmployeePendingPayments() {
   const [payments, setPayments] = useState([]);
@@ -61,7 +62,9 @@ export default function EmployeePendingPayments() {
       );
 
       setPayments((prev) =>
-        prev.map((p) => (p._id === id ? { ...p, status: response.data.status } : p))
+        prev.map((p) =>
+          p._id === id ? { ...p, status: response.data.status } : p
+        )
       );
     } catch (err) {
       console.error(err);
@@ -70,51 +73,53 @@ export default function EmployeePendingPayments() {
   };
 
   return (
-   
-      <div className="page-content">
-        <div className="payments-container">
-          <h2>Pending Payments</h2>
-          {error && <p className="error-msg">{error}</p>}
+    <div className="page-content">
+      <div className="payments-container">
+        <h2>Pending Payments</h2>
+        {error && <p className="error-msg">{error}</p>}
 
-          {loading ? (
-            <p>Loading pending payments...</p>
-          ) : payments.length === 0 ? (
-            <p>No pending payments found.</p>
-          ) : (
-            <table className="payments-table">
-              <thead>
-                <tr>
-                  <th>Customer Name</th>
-                  <th>Amount (R)</th>
-                  <th>Payment Method</th>
-                  <th>Status</th>
-                  <th>Actions</th>
+        {loading ? (
+          <p>Loading pending payments...</p>
+        ) : payments.length === 0 ? (
+          <p>No pending payments found.</p>
+        ) : (
+          <table className="payments-table">
+            <thead>
+              <tr>
+                <th>Customer Name</th>
+                <th>Amount (R)</th>
+                <th>Payment Method</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {payments.map((p) => (
+                <tr key={p._id}>
+                  <td>{p.customerName}</td>
+                  <td>R {p.amount.toFixed(2)}</td>
+                  <td>{p.paymentMethod}</td>
+                  <td>{p.status}</td>
+                  <td>
+                    {p.status === "pending" ? (
+                      <>
+                        <button onClick={() => updateStatus(p._id, "approved")}>
+                          Approve
+                        </button>
+                        <button onClick={() => updateStatus(p._id, "denied")}>
+                          Deny
+                        </button>
+                      </>
+                    ) : (
+                      <span>Processed</span>
+                    )}
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {payments.map((p) => (
-                  <tr key={p._id}>
-                    <td>{p.customerName}</td>
-                    <td>R {p.amount.toFixed(2)}</td>
-                    <td>{p.paymentMethod}</td>
-                    <td>{p.status}</td>
-                    <td>
-                      {p.status === "pending" ? (
-                        <>
-                          <button onClick={() => updateStatus(p._id, "approved")}>Approve</button>
-                          <button onClick={() => updateStatus(p._id, "denied")}>Deny</button>
-                        </>
-                      ) : (
-                        <span>Processed</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
-    
+    </div>
   );
 }
