@@ -190,8 +190,16 @@ docker build -t task2_insy7314_backend ./backend
 - npm install
 - npm run dev
 
-**4️⃣ Access**
+**4️⃣ Run Employee-portal**
+- bash
+- Copy code
+- cd frontend
+- npm install
+- npm run dev
+
+**5️⃣ Access**
 - Frontend: https://localhost:5173
+- Employee-portal: https://localhost:5174
 - Backend API: https://localhost:5000
 
 
