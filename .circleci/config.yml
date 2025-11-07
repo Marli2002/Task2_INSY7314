@@ -25,9 +25,8 @@ jobs:
             cd backend
             npm run test || cat /home/circleci/.npm/_logs/*-debug-0.log
       - run:
-          name: Confirm lcov.info exists
-          command: |
-            ls -la backend/coverage/lcov.info
+          name: Confirm backend coverage exists
+          command: ls -la backend/coverage/lcov.info
       - persist_to_workspace:
           root: .
           paths:
@@ -61,6 +60,34 @@ jobs:
           paths:
             - frontend
 
+  employee-portal-build:
+    docker:
+      - image: cimg/node:20.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - employee-portal-node-deps-{{ checksum "employee-portal/package-lock.json" }}
+            - employee-portal-node-deps-
+      - run:
+          name: Install employee-portal dependencies
+          command: |
+            cd employee-portal
+            npm install
+      - save_cache:
+          paths:
+            - employee-portal/node_modules
+          key: employee-portal-node-deps-{{ checksum "employee-portal/package-lock.json" }}
+      - run:
+          name: Build employee-portal
+          command: |
+            cd employee-portal
+            npm run build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - employee-portal
+
   docker-build:
     docker:
       - image: cimg/base:stable
@@ -71,43 +98,9 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: Check and fix Dockerfile naming for backend
+          name: Build all Docker images with Docker Compose
           command: |
-            cd backend
-            if [ -f DockerFile ]; then
-              echo "Found DockerFile (wrong case), renaming to Dockerfile"
-              mv DockerFile Dockerfile
-            fi
-            if [ ! -f Dockerfile ]; then
-              echo "ERROR: No Dockerfile found!"
-              ls -la
-              exit 1
-            fi
-            echo "Backend Dockerfile ready"
-      - run:
-          name: Check and fix Dockerfile naming for frontend
-          command: |
-            cd frontend
-            if [ -f DockerFile ]; then
-              echo "Found DockerFile (wrong case), renaming to Dockerfile"
-              mv DockerFile Dockerfile
-            fi
-            if [ ! -f Dockerfile ]; then
-              echo "ERROR: No Dockerfile found!"
-              ls -la
-              exit 1
-            fi
-            echo "Frontend Dockerfile ready"
-      - run:
-          name: Build backend Docker image
-          command: |
-            cd backend
-            docker build -t task2_insy7314_backend:latest .
-      - run:
-          name: Build frontend Docker image
-          command: |
-            cd frontend
-            docker build -t task2_insy7314_frontend:latest .
+            docker-compose -f docker-compose.yml build
       - run:
           name: List Docker images
           command: docker images
@@ -116,7 +109,6 @@ jobs:
     working_directory: ~/build
     docker:
       - image: sonarsource/sonar-scanner-cli
-    resource_class: small
     steps:
       - checkout
       - attach_workspace:
@@ -124,21 +116,18 @@ jobs:
       - run:
           name: Run SonarCloud scan
           command: |
-            echo "Sonar branch value is: $CIRCLE_BRANCH"
-            echo "Sonar org value is: $SONAR_ORG"
-
             sonar-scanner \
               -Dsonar.projectKey=$SONAR_PROJECT_KEY \
               -Dsonar.organization=$SONAR_ORG \
               -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.token=$SONAR_TOKEN \
-              -Dsonar.sources=backend,frontend \
+              -Dsonar.sources=backend,frontend,employee-portal \
               -Dsonar.tests=backend/tests \
               -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info \
-              -Dsonar.exclusions=backend/tests/**,frontend/tests/**,backend/certs/**,frontend/certs/**,**/node_modules/**,**/build/**,**/.vs/**,**/*.db,**/*.sqlite,**/build-wrapper-dump.json \
+              -Dsonar.exclusions=backend/tests/**,frontend/tests/**,employee-portal/tests/**,backend/certs/**,frontend/certs/**,employee-portal/certs/**,**/node_modules/**,**/build/**,**/.vs/**,**/*.db,**/*.sqlite,**/build-wrapper-dump.json \
               -Dsonar.test.inclusions=backend/tests/** \
-              -Dsonar.javascript.exclusions=frontend/tests/** \
-              -Dsonar.security.exclusions=backend/certs/**,frontend/certs/** \
+              -Dsonar.javascript.exclusions=frontend/tests/**,employee-portal/tests/** \
+              -Dsonar.security.exclusions=backend/certs/**,frontend/certs/**,employee-portal/certs/** \
               -Dsonar.newCode.referenceBranch=main \
               -Dsonar.branch.name=$CIRCLE_BRANCH
 
@@ -148,18 +137,14 @@ workflows:
     jobs:
       - backend-build
       - frontend-build
+      - employee-portal-build
       - docker-build:
           requires:
             - backend-build
             - frontend-build
+            - employee-portal-build
       - sonarqube:
           requires:
             - backend-build
             - frontend-build
- 
-
-# References
-
-# CircleCI. n.d. Configuration reference (version 2.1). Retrieved October 10, 2025, from https://circleci.com/docs/configuration-reference 
-# FreeCodeCamp. 2024. APDS7311 – Setting up CircleCI and SonarQube [YouTube video]. Retrieved October 10, 2025, from https://youtu.be/I4CyzX5rhLU?si=qYrn3ATcG-1VYhcd 
-# SonarSource. n.d. Analyzing projects with SonarCloud and CircleCI.Retrieved October 10, 2025, from https://docs.sonarsource.com/sonarqube-cloud 
+            - employee-portal-build
