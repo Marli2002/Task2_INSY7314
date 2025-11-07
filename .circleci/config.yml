@@ -39,7 +39,7 @@ jobs:
           paths:
             - backend
 
-
+  # frontend
   frontend-build:
     docker:
       - image: cimg/node:20.0
