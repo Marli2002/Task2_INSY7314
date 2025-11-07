@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import NavBar from "./NavBar";
-import './Form.css';
+import "./Form.css";
 
 const sanitizeString = (str) => (typeof str === "string" ? str.replace(/[$.]/g, "").trim() : "");
 
@@ -17,26 +17,30 @@ export default function EmployeePendingPayments() {
   }, []);
 
   const fetchPendingPayments = async () => {
-    setError("");
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
+  setError("");
+  setLoading(true);
 
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/payment/pending-all`, {
-        headers: { "x-auth-token": token }
-      });
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
 
-      const sanitizedPayments = response.data.map(p => ({
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_URL}/employee/payments/pending`,
+      { headers: { "x-auth-token": token } }
+    );
+
+    console.log("RESPONSE:", response.data); // ← ADD THIS
+
+
+      const sanitizedPayments = response.data.map((p) => ({
         _id: sanitizeString(p._id),
         customerName: sanitizeString(p.customerName),
         amount: Number(p.amount),
         paymentMethod: sanitizeString(p.paymentMethod),
         status: sanitizeString(p.status),
-        user: p.userId ? { email: p.userId.email, username: p.userId.username } : null
       }));
 
       setPayments(sanitizedPayments);
@@ -51,14 +55,18 @@ export default function EmployeePendingPayments() {
   const updateStatus = async (id, status) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.patch(
-        `${import.meta.env.VITE_API_URL}/payment/${id}/status`,
+
+      // ✅ Use PUT (not PATCH)
+      const response = await axios.put(
+        `${import.meta.env.VITE_API_URL}/employee/payments/${id}/status`,
         { status },
         { headers: { "x-auth-token": token } }
       );
 
-      // Update the specific payment in state
-      setPayments(payments.map(p => p._id === id ? { ...p, status: response.data.status } : p));
+      // ✅ Update UI immediately
+      setPayments((prev) =>
+        prev.map((p) => (p._id === id ? { ...p, status: response.data.status } : p))
+      );
     } catch (err) {
       console.error(err);
       setError("Failed to update payment status.");
@@ -84,7 +92,6 @@ export default function EmployeePendingPayments() {
                 <th>Amount (R)</th>
                 <th>Payment Method</th>
                 <th>Status</th>
-                <th>User</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -92,18 +99,18 @@ export default function EmployeePendingPayments() {
               {payments.map((p) => (
                 <tr key={p._id}>
                   <td>{p.customerName}</td>
-                  <td>{`R ${p.amount.toFixed(2)}`}</td>
+                  <td>R {p.amount.toFixed(2)}</td>
                   <td>{p.paymentMethod}</td>
                   <td>{p.status}</td>
-                  <td>{p.user ? `${p.user.username} (${p.user.email})` : "N/A"}</td>
                   <td>
-                    {p.status === "pending" && (
+                    {p.status === "pending" ? (
                       <>
                         <button onClick={() => updateStatus(p._id, "approved")}>Approve</button>
                         <button onClick={() => updateStatus(p._id, "denied")}>Deny</button>
                       </>
+                    ) : (
+                      <span>Processed</span>
                     )}
-                    {p.status !== "pending" && <span>Processed</span>}
                   </td>
                 </tr>
               ))}
