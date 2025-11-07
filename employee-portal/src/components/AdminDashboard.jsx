@@ -10,20 +10,36 @@ export default function AdminDashboard() {
   return (
     <div style={{ width: '100%', minHeight: '100vh' }}>
       <NavBar />
-      <div style={{ padding: '40px 20px', maxWidth: '1200px', margin: '0 auto' }}>
-        <h1>Admin Dashboard</h1>
-        <p>Here the admin will manage employees.</p>
+      <div style={{ 
+        padding: '40px 20px', 
+        maxWidth: '1200px', 
+        margin: '0 auto',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: 'calc(100vh - 120px)'
+      }}>
+        <h1 style={{ textAlign: 'center', fontSize: '2.5rem', marginBottom: '1rem' }}>Admin Dashboard</h1>
+        <p style={{ textAlign: 'center', fontSize: '1.1rem', marginBottom: '2rem' }}>Here the admin will manage employees.</p>
 
-        <div style={{ marginTop: 20, display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+        <div style={{ 
+          marginTop: 20, 
+          display: 'flex', 
+          gap: '15px', 
+          flexWrap: 'wrap',
+          justifyContent: 'center'
+        }}>
           <button
             style={{ 
-              padding: '10px 20px', 
+              padding: '15px 30px', 
               cursor: 'pointer',
               backgroundColor: '#004466',
               color: 'white',
               border: 'none',
               borderRadius: '6px',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
+              fontSize: '1.1rem'
             }}
             onClick={() => navigate("/admin/employees/create")}
           >
@@ -32,13 +48,14 @@ export default function AdminDashboard() {
 
           <button
             style={{ 
-              padding: '10px 20px', 
+              padding: '15px 30px', 
               cursor: 'pointer',
               backgroundColor: '#004466',
               color: 'white',
               border: 'none',
               borderRadius: '6px',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
+              fontSize: '1.1rem'
             }}
             onClick={() => navigate("/admin/employees")}
           >
