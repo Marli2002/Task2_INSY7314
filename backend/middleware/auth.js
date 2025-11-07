@@ -11,7 +11,8 @@ async function auth(req, res, next) {
       req.headers['x-auth-token'] = mongoSanitize(req.headers['x-auth-token']);
     }
 
-    let token = req.cookies?.accessToken || req.header('x-auth-token');
+    let token = req.cookies?.accessToken || req.header('Authorization')?.replace('Bearer ', '')
+         || req.header('x-auth-token');
     if (!token) return res.status(401).json({ msg: 'No token, authorization denied' });
     if (token.startsWith('Bearer ')) token = token.slice(7).trim();
 

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const { createPayment, getPayments } = require('../controllers/paymentController');
+const { createPayment, getPayments, getAllPendingPaymentsForEmployees, updatePaymentStatus, getPaymentHistory } = require('../controllers/paymentController');
 
 // Simple input validation middleware
 const validatePayment = (req, res, next) => {
@@ -22,13 +22,11 @@ const validatePayment = (req, res, next) => {
 // Routes
 router.post('/', auth, validatePayment, createPayment);
 router.get('/', auth, getPayments);
+router.patch('/:id/status', auth, updatePaymentStatus);
+router.get('/history', auth, getPaymentHistory);
+router.get('/pending-all', getAllPendingPaymentsForEmployees);
 
 module.exports = router;
-
-
-
-
-
 
 /*
 References:

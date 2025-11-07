@@ -26,9 +26,12 @@ app.use(cookieParser());
 
 // CORS (frontend only)
 app.use(cors({
-  origin: 'https://localhost:5173',
-  credentials: true
+  origin: ['https://localhost:5173', 'https://localhost:5174'], // frontend ports
+  credentials: true, // if you need to send cookies or auth headers
+ allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token']
 }));
+
+app.use(express.json());
 
 // Security headers
 app.use(helmet());

@@ -1,16 +1,23 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { sanitizeEmail } from "../utils/sanitize";
 import './Form.css';
 
-// Login Form Component - USER PORTAL ONLY
-export default function LoginForm() {
+
+// Employee/Admin Login Form Component
+export default function EmployeeLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Sanitize email
+  const sanitizeEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const cleanEmail = email.trim();
+    return emailRegex.test(cleanEmail) ? cleanEmail : "";
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,16 +42,16 @@ export default function LoginForm() {
     try {
       // Login request with cookies
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/auth/login`,
+        'https://localhost:5000/api/auth/login',
         { email: cleanEmail, password: cleanPassword },
         { withCredentials: true }
       );
 
-      // Check if user is actually a regular user (not employee/admin)
+      // Check if user is employee or admin
       const role = response.data.user.role;
       
-      if (role === "admin" || role === "employee") {
-        setError("This portal is for customers only. Employees and admins should use the employee portal.");
+      if (role !== "admin" && role !== "employee") {
+        setError("Access denied. This portal is for employees and administrators only.");
         setLoading(false);
         return;
       }
@@ -52,14 +59,20 @@ export default function LoginForm() {
       // Store JWT and user info in localStorage
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
+      localStorage.setItem("role", role);
 
-      // User portal - always redirect to create payment
-      navigate("/payments/create");
+      // Redirect based on role
+      if (role === "admin") {
+        navigate("/admin/dashboard");
+      } else if (role === "employee") {
+        navigate("/employee/dashboard");
+      }
+
       alert("Logged in successfully!");
-      
+
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || "Login failed. Please try again.");
+      setError(err.response?.data?.message || "Login failed. Please check your credentials.");
     } finally {
       setLoading(false);
     }
@@ -68,9 +81,9 @@ export default function LoginForm() {
   return (
     <div className="full-page">
       <div className="form-container">
-        <h2>Customer Login</h2>
+        <h2>Employee/Admin Login</h2>
         <p style={{ fontSize: '0.9em', color: '#666', marginBottom: '1rem' }}>
-          Login to manage your payments
+          This portal is for employees and administrators only.
         </p>
         {error && <p className="error-msg">{error}</p>}
         <form onSubmit={handleSubmit}>
@@ -79,6 +92,7 @@ export default function LoginForm() {
             type="email"
             value={email}
             onChange={e => setEmail(e.target.value)}
+            placeholder="employee@example.com"
             required
           />
 
@@ -95,9 +109,9 @@ export default function LoginForm() {
           </button>
         </form>
 
-        <button className="secondary-btn" onClick={() => navigate("/register")}>
-          Register
-        </button>
+        <p style={{ marginTop: '1.5rem', fontSize: '0.85em', color: '#999', textAlign: 'center' }}>
+          No registration available. Contact your administrator for an account.
+        </p>
       </div>
     </div>
   );
@@ -112,7 +126,7 @@ Axios. n.d. Axios API documentation. Retrieved October 10, 2025, from https://ax
 
 Mozilla Developer Network (MDN). n.d. Using the Web Storage API. Retrieved October 10, 2025, from https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
 
-Mozilla Developer Network (MDN). n.d. Using the Fetch API. Retrieved October 10, 2025, from https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+Mozilla Developer Network (MDN). n.d. Regular expressions. Mozilla Developer Network. Retrieved October 10, 2025, from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
 
 React. n.d. Components – React documentation. Retrieved October 10, 2025, from https://react.dev/reference/react-dom/components
 */

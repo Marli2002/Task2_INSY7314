@@ -43,6 +43,77 @@ exports.getPayments = async (req, res) => {
 };
 
 
+// paymentController.js
+exports.getAllPendingPaymentsForEmployees = async (req, res) => {
+  try {
+    const payments = await Payment.find({ status: 'pending' })
+      .sort({ createdAt: -1 })
+      .populate('userId', 'email username');
+    const safePayments = payments.map(p => ({
+      ...p._doc,
+      customerName: xss(p.customerName)
+    }));
+    res.status(200).json(safePayments);
+  } catch (err) {
+    console.error('Get all pending payments error:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+
+//Update payment status (approve or deny)
+//Update payment status (approve or deny)
+exports.updatePaymentStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!['approved', 'denied'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status' });
+    }
+
+    const payment = await Payment.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    ).populate('userId', 'email username');
+
+    if (!payment) return res.status(404).json({ message: 'Payment not found' });
+
+    const safePayment = {
+      ...payment._doc,
+      customerName: xss(payment.customerName)
+    };
+
+    res.json(safePayment);
+  } catch (err) {
+    console.error('Update payment status error:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+// View all approved/denied payments (payment history)
+exports.getPaymentHistory = async (req, res) => {
+  try {
+    const payments = await Payment.find({ status: { $in: ['approved', 'denied'] } })
+      .sort({ updatedAt: -1 })
+      .populate('userId', 'email username'); // show who submitted
+
+    // Sanitize customer names
+    const safePayments = payments.map(p => ({
+      ...p._doc,
+      customerName: xss(p.customerName)
+    }));
+
+    res.status(200).json(safePayments);
+  } catch (err) {
+    console.error('Get all payment history error:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 /*
 References:
 

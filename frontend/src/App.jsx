@@ -6,12 +6,6 @@ import Logout from "./components/Logout.jsx";
 import PaymentsList from "./components/PaymentsList.jsx";
 import CreatePayment from "./components/CreatePayment.jsx";
 
-import EmployeePendingPayments from "./components/EmployeePendingPayments.jsx";
-import EmployeePaymentHistory from "./components/EmployeePaymentHistory.jsx";  
-
-import AdminDashboard from "./components/AdminDashboard.jsx";
-
-
 function App() {
   return (
     <Router>
@@ -25,13 +19,6 @@ function App() {
         {/* User Routes */}
         <Route path="/payments/create" element={<CreatePayment />} />
         <Route path="/payments" element={<PaymentsList />} />
-
-        {/* Employee Routes */}
-        <Route path="/employee/pending" element={<EmployeePendingPayments />} />
-        <Route path="/employee/history" element={<EmployeePaymentHistory />} />
-
-        {/* Admin Routes */}
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
       </Routes>
     </Router>
   );
