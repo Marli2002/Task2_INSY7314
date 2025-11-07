@@ -1,105 +1,110 @@
 version: 2.1
 
 jobs:
-  
-  # Backend Build & Test
   backend-build:
     docker:
       - image: cimg/node:20.0
     steps:
       - checkout
+
       - restore_cache:
           keys:
             - backend-node-deps-{{ checksum "backend/package-lock.json" }}
             - backend-node-deps-
+
       - run:
           name: Install backend dependencies
           command: |
             cd backend
             npm install
+
       - save_cache:
           paths:
             - backend/node_modules
           key: backend-node-deps-{{ checksum "backend/package-lock.json" }}
+
       - run:
           name: Run backend tests and coverage
           command: |
             cd backend
             npm run test || cat /home/circleci/.npm/_logs/*-debug-0.log
+
       - run:
           name: Verify lcov.info exists
           command: |
-            if [ -f backend/coverage/lcov.info ]; then
-              ls -la backend/coverage/lcov.info
-            else
-              echo "No coverage report found, skipping"
-            fi
+            ls -la backend/coverage/lcov.info
+
       - persist_to_workspace:
           root: .
           paths:
             - backend
 
-  
-  # Frontend Build
   frontend-build:
     docker:
       - image: cimg/node:20.0
     steps:
       - checkout
+
       - restore_cache:
           keys:
             - frontend-node-deps-{{ checksum "frontend/package-lock.json" }}
             - frontend-node-deps-
+
       - run:
           name: Install frontend dependencies
           command: |
             cd frontend
             npm install
+
       - save_cache:
           paths:
             - frontend/node_modules
           key: frontend-node-deps-{{ checksum "frontend/package-lock.json" }}
+
       - run:
           name: Build frontend
           command: |
             cd frontend
             npm run build
+
       - persist_to_workspace:
           root: .
           paths:
             - frontend
 
-  
-  # Employee Portal Build
   employee-portal-build:
     docker:
       - image: cimg/node:20.0
     steps:
       - checkout
+
       - restore_cache:
           keys:
             - employee-portal-node-deps-{{ checksum "employee-portal/package-lock.json" }}
             - employee-portal-node-deps-
+
       - run:
           name: Install employee portal dependencies
           command: |
             cd employee-portal
             npm install
+
       - save_cache:
           paths:
             - employee-portal/node_modules
           key: employee-portal-node-deps-{{ checksum "employee-portal/package-lock.json" }}
+
       - run:
           name: Build employee portal
           command: |
             cd employee-portal
             npm run build
+
       - persist_to_workspace:
           root: .
           paths:
             - employee-portal
 
-  # Docker Build Job
   docker-build:
     docker:
       - image: cimg/base:stable
@@ -107,32 +112,57 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
+
       - setup_remote_docker:
           docker_layer_caching: true
+
       - run:
           name: Check Dockerfiles exist
           command: |
             for dir in backend frontend employee-portal; do
-              if [ ! -f "$dir/Dockerfile" ]; then
-                echo "$dir/Dockerfile missing!"
+              if [ ! -f "$dir/Dockerfile" ] && [ ! -f "$dir/dockerfile" ] && [ ! -f "$dir/DockerFile" ]; then
+                echo "$dir Dockerfile missing!"
                 exit 1
               fi
             done
+
       - run:
           name: Build backend Docker image
-          command: docker build -t task2_insy7314_backend:latest ./backend
+          command: |
+            if [ -f backend/Dockerfile ]; then
+              docker build -t task2_insy7314_backend:latest ./backend
+            elif [ -f backend/DockerFile ]; then
+              docker build -f backend/DockerFile -t task2_insy7314_backend:latest ./backend
+            else
+              docker build -f backend/dockerfile -t task2_insy7314_backend:latest ./backend
+            fi
+
       - run:
           name: Build frontend Docker image
-          command: docker build -t task2_insy7314_frontend:latest ./frontend
+          command: |
+            if [ -f frontend/Dockerfile ]; then
+              docker build -t task2_insy7314_frontend:latest ./frontend
+            elif [ -f frontend/DockerFile ]; then
+              docker build -f frontend/DockerFile -t task2_insy7314_frontend:latest ./frontend
+            else
+              docker build -f frontend/dockerfile -t task2_insy7314_frontend:latest ./frontend
+            fi
+
       - run:
           name: Build employee portal Docker image
-          command: docker build -t task2_insy7314_employee_portal:latest ./employee-portal
+          command: |
+            if [ -f employee-portal/Dockerfile ]; then
+              docker build -t task2_insy7314_employee_portal:latest ./employee-portal
+            elif [ -f employee-portal/DockerFile ]; then
+              docker build -f employee-portal/DockerFile -t task2_insy7314_employee_portal:latest ./employee-portal
+            else
+              docker build -f employee-portal/dockerfile -t task2_insy7314_employee_portal:latest ./employee-portal
+            fi
+
       - run:
           name: List built Docker images
           command: docker images
 
-
-  # SonarCloud Analysis
   sonarqube:
     working_directory: ~/build
     docker:
@@ -142,6 +172,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/workspace
+
       - run:
           name: SonarCloud scan
           command: |
@@ -163,11 +194,13 @@ workflows:
       - backend-build
       - frontend-build
       - employee-portal-build
+
       - docker-build:
           requires:
             - backend-build
             - frontend-build
             - employee-portal-build
+
       - sonarqube:
           requires:
             - backend-build
