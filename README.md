@@ -13,7 +13,7 @@ Part 3 extends the system with an **Employee & Admin Portal**, full **Docker Com
 | Michke van der Merwe | ST10057020 | Documentation / Testing / Compliance |
 
 ## 🎥 Demonstration Video
-🎬 Video Walkthrough: 
+🎬 Video Walkthrough: https://youtu.be/y5GvLbCf_tA
 
 ## 🧠 Overview
 
@@ -161,6 +161,9 @@ A CI/CD pipeline is configured using CircleCI, located in `.circleci/config.yml`
 
 Both frontend and backend are containerized.  
 Each folder (`frontend`, `backend`) contains its own Dockerfile.
+
+![WhatsApp Image 2025-11-07 at 21 44 26](https://github.com/user-attachments/assets/cabe7e82-e763-45e1-8bea-c4981397440b)
+
 
 **To build locally:**
 
