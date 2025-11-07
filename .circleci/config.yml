@@ -119,7 +119,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
 
-      # Backend
+      
       - run:
           name: Validate backend Dockerfile
           command: |
@@ -127,7 +127,7 @@ jobs:
             if [ -f DockerFile ]; then mv DockerFile Dockerfile; fi
             if [ ! -f Dockerfile ]; then echo "Backend Dockerfile missing"; exit 1; fi
 
-      # Frontend
+      
       - run:
           name: Validate frontend Dockerfile
           command: |
@@ -135,7 +135,7 @@ jobs:
             if [ -f DockerFile ]; then mv DockerFile Dockerfile; fi
             if [ ! -f Dockerfile ]; then echo "Frontend Dockerfile missing"; exit 1; fi
 
-      # Employee portal
+      
       - run:
           name: Validate employee portal Dockerfile
           command: |
