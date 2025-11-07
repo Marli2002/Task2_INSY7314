@@ -133,8 +133,8 @@ jobs:
               -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.login=$SONAR_TOKEN \
               -Dsonar.sources=backend,frontend,employee-portal \
-              -Dsonar.tests=backend/tests,frontend/tests,employee-portal/tests \
-              -Dsonar.test.inclusions=backend/tests/**,frontend/tests/**,employee-portal/tests/** \
+              -Dsonar.tests=backend/tests \
+              -Dsonar.test.inclusions=backend/tests/** \
               -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info \
               -Dsonar.exclusions=backend/.vs/**,**/*.sqlite,**/*.vsidx,**/*.db,**/node_modules/**,**/build/**
 
