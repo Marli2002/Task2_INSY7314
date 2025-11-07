@@ -6,88 +6,107 @@ jobs:
       - image: cimg/node:20.0
     steps:
       - checkout
+
       - restore_cache:
           keys:
             - backend-node-deps-{{ checksum "backend/package-lock.json" }}
             - backend-node-deps-
+
       - run:
           name: Install backend dependencies
           command: |
             cd backend
             npm install
+
       - save_cache:
           paths:
             - backend/node_modules
           key: backend-node-deps-{{ checksum "backend/package-lock.json" }}
+
       - run:
-          name: Run backend tests and generate coverage
+          name: Run backend tests and coverage
           command: |
             cd backend
             npm run test || cat /home/circleci/.npm/_logs/*-debug-0.log
+
       - run:
-          name: Confirm lcov.info exists
+          name: Verify lcov.info exists
           command: |
             ls -la backend/coverage/lcov.info
+
       - persist_to_workspace:
           root: .
           paths:
             - backend
+
 
   frontend-build:
     docker:
       - image: cimg/node:20.0
     steps:
       - checkout
+
       - restore_cache:
           keys:
             - frontend-node-deps-{{ checksum "frontend/package-lock.json" }}
             - frontend-node-deps-
+
       - run:
           name: Install frontend dependencies
           command: |
             cd frontend
             npm install
+
       - save_cache:
           paths:
             - frontend/node_modules
           key: frontend-node-deps-{{ checksum "frontend/package-lock.json" }}
+
       - run:
           name: Build frontend
           command: |
             cd frontend
             npm run build
+
       - persist_to_workspace:
           root: .
           paths:
             - frontend
+
 
   employee-portal-build:
     docker:
       - image: cimg/node:20.0
     steps:
       - checkout
+
       - restore_cache:
           keys:
             - employee-portal-node-deps-{{ checksum "employee-portal/package-lock.json" }}
             - employee-portal-node-deps-
+
       - run:
           name: Install employee portal dependencies
           command: |
             cd employee-portal
             npm install
+
       - save_cache:
           paths:
             - employee-portal/node_modules
           key: employee-portal-node-deps-{{ checksum "employee-portal/package-lock.json" }}
+
       - run:
           name: Build employee portal
           command: |
             cd employee-portal
             npm run build
+
       - persist_to_workspace:
           root: .
           paths:
             - employee-portal
+
 
   docker-build:
     docker:
@@ -96,68 +115,56 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
+
       - setup_remote_docker:
           docker_layer_caching: true
+
+      # Backend
       - run:
-          name: Check and fix Dockerfile naming for backend
+          name: Validate backend Dockerfile
           command: |
             cd backend
-            if [ -f DockerFile ]; then
-              echo "Found DockerFile (wrong case), renaming to Dockerfile"
-              mv DockerFile Dockerfile
-            fi
-            if [ ! -f Dockerfile ]; then
-              echo "ERROR: No Dockerfile found!"
-              ls -la
-              exit 1
-            fi
-            echo "Backend Dockerfile ready"
+            if [ -f DockerFile ]; then mv DockerFile Dockerfile; fi
+            if [ ! -f Dockerfile ]; then echo "Backend Dockerfile missing"; exit 1; fi
+
+      # Frontend
       - run:
-          name: Check and fix Dockerfile naming for frontend
+          name: Validate frontend Dockerfile
           command: |
             cd frontend
-            if [ -f DockerFile ]; then
-              echo "Found DockerFile (wrong case), renaming to Dockerfile"
-              mv DockerFile Dockerfile
-            fi
-            if [ ! -f Dockerfile ]; then
-              echo "ERROR: No Dockerfile found!"
-              ls -la
-              exit 1
-            fi
-            echo "Frontend Dockerfile ready"
+            if [ -f DockerFile ]; then mv DockerFile Dockerfile; fi
+            if [ ! -f Dockerfile ]; then echo "Frontend Dockerfile missing"; exit 1; fi
+
+      # Employee portal
       - run:
-          name: Check and fix Dockerfile naming for employee portal
+          name: Validate employee portal Dockerfile
           command: |
             cd employee-portal
-            if [ -f DockerFile ]; then
-              echo "Found DockerFile (wrong case), renaming to Dockerfile"
-              mv DockerFile Dockerfile
-            fi
-            if [ ! -f Dockerfile ]; then
-              echo "ERROR: No Dockerfile found!"
-              ls -la
-              exit 1
-            fi
-            echo "Employee portal Dockerfile ready"
+            if [ -f DockerFile ]; then mv DockerFile Dockerfile; fi
+            if [ ! -f Dockerfile ]; then echo "Employee portal Dockerfile missing"; exit 1; fi
+
       - run:
           name: Build backend Docker image
           command: |
             cd backend
             docker build -t task2_insy7314_backend:latest .
+
       - run:
           name: Build frontend Docker image
           command: |
             cd frontend
             docker build -t task2_insy7314_frontend:latest .
+
       - run:
           name: Build employee portal Docker image
           command: |
             cd employee-portal
             docker build -t task2_insy7314_employee_portal:latest .
+
       - run:
-          name: List Docker images
+          name: List built Docker images
           command: docker images
+
 
   sonarqube:
     working_directory: ~/build
@@ -168,12 +175,10 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/workspace
-      - run:
-          name: Run SonarCloud scan
-          command: |
-            echo "Sonar branch value is: $CIRCLE_BRANCH"
-            echo "Sonar org value is: $SONAR_ORG"
 
+      - run:
+          name: SonarCloud scan
+          command: |
             sonar-scanner \
               -Dsonar.projectKey=$SONAR_PROJECT_KEY \
               -Dsonar.organization=$SONAR_ORG \
@@ -182,12 +187,11 @@ jobs:
               -Dsonar.sources=backend,frontend,employee-portal \
               -Dsonar.tests=backend/tests \
               -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info \
-              -Dsonar.exclusions=backend/tests/**,frontend/tests/**,employee-portal/tests/**,backend/certs/**,frontend/certs/**,employee-portal/certs/**,**/node_modules/**,**/build/**,**/.vs/**,**/*.db,**/*.sqlite,**/build-wrapper-dump.json \
+              -Dsonar.exclusions=backend/tests/**,frontend/tests/**,employee-portal/tests/**,**/node_modules/**,**/build/** \
               -Dsonar.test.inclusions=backend/tests/** \
-              -Dsonar.javascript.exclusions=frontend/tests/**,employee-portal/tests/** \
-              -Dsonar.security.exclusions=backend/certs/**,frontend/certs/**,employee-portal/certs/** \
-              -Dsonar.newCode.referenceBranch=main \
-              -Dsonar.branch.name=$CIRCLE_BRANCH
+              -Dsonar.branch.name=$CIRCLE_BRANCH \
+              -Dsonar.branch.target=main
+
 
 workflows:
   version: 2
@@ -196,11 +200,13 @@ workflows:
       - backend-build
       - frontend-build
       - employee-portal-build
+
       - docker-build:
           requires:
             - backend-build
             - frontend-build
             - employee-portal-build
+
       - sonarqube:
           requires:
             - backend-build
