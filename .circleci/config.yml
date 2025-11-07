@@ -24,9 +24,6 @@ jobs:
           command: |
             cd backend
             npm run test || cat /home/circleci/.npm/_logs/*-debug-0.log
-      - run:
-          name: Confirm backend coverage exists
-          command: ls -la backend/coverage/lcov.info
       - persist_to_workspace:
           root: .
           paths:
@@ -70,7 +67,7 @@ jobs:
             - employee-portal-node-deps-{{ checksum "employee-portal/package-lock.json" }}
             - employee-portal-node-deps-
       - run:
-          name: Install employee-portal dependencies
+          name: Install employee portal dependencies
           command: |
             cd employee-portal
             npm install
@@ -79,7 +76,7 @@ jobs:
             - employee-portal/node_modules
           key: employee-portal-node-deps-{{ checksum "employee-portal/package-lock.json" }}
       - run:
-          name: Build employee-portal
+          name: Build employee portal
           command: |
             cd employee-portal
             npm run build
@@ -98,9 +95,20 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: Build all Docker images with Docker Compose
+          name: Build backend Docker image
           command: |
-            docker-compose -f docker-compose.yml build
+            cd backend
+            docker build -t task2_insy7314_backend:latest .
+      - run:
+          name: Build frontend Docker image
+          command: |
+            cd frontend
+            docker build -t task2_insy7314_frontend:latest .
+      - run:
+          name: Build employee portal Docker image
+          command: |
+            cd employee-portal
+            docker build -t task2_insy7314_employee_portal:latest .
       - run:
           name: List Docker images
           command: docker images
@@ -116,6 +124,7 @@ jobs:
       - run:
           name: Run SonarCloud scan
           command: |
+            echo "Branch: $CIRCLE_BRANCH"
             sonar-scanner \
               -Dsonar.projectKey=$SONAR_PROJECT_KEY \
               -Dsonar.organization=$SONAR_ORG \
@@ -124,10 +133,8 @@ jobs:
               -Dsonar.sources=backend,frontend,employee-portal \
               -Dsonar.tests=backend/tests \
               -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info \
-              -Dsonar.exclusions=backend/tests/**,frontend/tests/**,employee-portal/tests/**,backend/certs/**,frontend/certs/**,employee-portal/certs/**,**/node_modules/**,**/build/**,**/.vs/**,**/*.db,**/*.sqlite,**/build-wrapper-dump.json \
+              -Dsonar.exclusions=**/node_modules/**,**/build/**,**/certs/** \
               -Dsonar.test.inclusions=backend/tests/** \
-              -Dsonar.javascript.exclusions=frontend/tests/**,employee-portal/tests/** \
-              -Dsonar.security.exclusions=backend/certs/**,frontend/certs/**,employee-portal/certs/** \
               -Dsonar.newCode.referenceBranch=main \
               -Dsonar.branch.name=$CIRCLE_BRANCH
 
