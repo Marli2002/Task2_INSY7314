@@ -1,11 +1,11 @@
-/* Reset any potential parent constraints */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Force full width on body and html */
+
 html, body {
   width: 100%;
   margin: 0;
@@ -13,7 +13,7 @@ html, body {
   overflow-x: hidden;
 }
 
-/* Force full width on root React element */
+
 #root {
   width: 100%;
   margin: 0;
@@ -30,11 +30,11 @@ html, body {
   position: sticky;
   top: 0;
   z-index: 1000;
-  width: 100vw; /* Use viewport width instead */
+  width: 100vw; 
   max-width: 100%;
   left: 0;
   right: 0;
-  margin: 0; /* Remove any margin */
+  margin: 0;
   box-sizing: border-box;
 }
 
@@ -53,7 +53,7 @@ html, body {
   color: white;
   text-decoration: none;
   font-weight: 500;
-  white-space: nowrap; /* Prevent text wrapping */
+  white-space: nowrap; 
 }
 
 .nav-link:hover {

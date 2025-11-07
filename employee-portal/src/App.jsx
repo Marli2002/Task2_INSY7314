@@ -12,7 +12,7 @@ import Logout from "./components/Logout.jsx";
 function App() {
   return (
     <Router>
-      {/* Global navbar rendered once */}
+      
       <NavBar />
 
       <Routes>
