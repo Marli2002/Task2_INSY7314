@@ -17,23 +17,22 @@ export default function EmployeePendingPayments() {
   }, []);
 
   const fetchPendingPayments = async () => {
-  setError("");
-  setLoading(true);
+    setError("");
+    setLoading(true);
 
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
 
-    const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/employee/payments/pending`,
-      { headers: { "x-auth-token": token } }
-    );
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/employee/payments/pending`,
+        { headers: { "x-auth-token": token } }
+      );
 
-    console.log("RESPONSE:", response.data); // ← ADD THIS
-
+      console.log("RESPONSE:", response.data);
 
       const sanitizedPayments = response.data.map((p) => ({
         _id: sanitizeString(p._id),
@@ -56,14 +55,12 @@ export default function EmployeePendingPayments() {
     try {
       const token = localStorage.getItem("token");
 
-      // ✅ Use PUT (not PATCH)
       const response = await axios.put(
         `${import.meta.env.VITE_API_URL}/employee/payments/${id}/status`,
         { status },
         { headers: { "x-auth-token": token } }
       );
 
-      // ✅ Update UI immediately
       setPayments((prev) =>
         prev.map((p) => (p._id === id ? { ...p, status: response.data.status } : p))
       );
@@ -74,50 +71,52 @@ export default function EmployeePendingPayments() {
   };
 
   return (
-    <div className="full-page">
+    <>
       <NavBar />
-      <div className="payments-container">
-        <h2>Pending Payments</h2>
-        {error && <p className="error-msg">{error}</p>}
+      <div className="page-content">
+        <div className="payments-container">
+          <h2>Pending Payments</h2>
+          {error && <p className="error-msg">{error}</p>}
 
-        {loading ? (
-          <p>Loading pending payments...</p>
-        ) : payments.length === 0 ? (
-          <p>No pending payments found.</p>
-        ) : (
-          <table className="payments-table">
-            <thead>
-              <tr>
-                <th>Customer Name</th>
-                <th>Amount (R)</th>
-                <th>Payment Method</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {payments.map((p) => (
-                <tr key={p._id}>
-                  <td>{p.customerName}</td>
-                  <td>R {p.amount.toFixed(2)}</td>
-                  <td>{p.paymentMethod}</td>
-                  <td>{p.status}</td>
-                  <td>
-                    {p.status === "pending" ? (
-                      <>
-                        <button onClick={() => updateStatus(p._id, "approved")}>Approve</button>
-                        <button onClick={() => updateStatus(p._id, "denied")}>Deny</button>
-                      </>
-                    ) : (
-                      <span>Processed</span>
-                    )}
-                  </td>
+          {loading ? (
+            <p>Loading pending payments...</p>
+          ) : payments.length === 0 ? (
+            <p>No pending payments found.</p>
+          ) : (
+            <table className="payments-table">
+              <thead>
+                <tr>
+                  <th>Customer Name</th>
+                  <th>Amount (R)</th>
+                  <th>Payment Method</th>
+                  <th>Status</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {payments.map((p) => (
+                  <tr key={p._id}>
+                    <td>{p.customerName}</td>
+                    <td>R {p.amount.toFixed(2)}</td>
+                    <td>{p.paymentMethod}</td>
+                    <td>{p.status}</td>
+                    <td>
+                      {p.status === "pending" ? (
+                        <>
+                          <button onClick={() => updateStatus(p._id, "approved")}>Approve</button>
+                          <button onClick={() => updateStatus(p._id, "denied")}>Deny</button>
+                        </>
+                      ) : (
+                        <span>Processed</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

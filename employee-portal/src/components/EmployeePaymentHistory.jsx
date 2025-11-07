@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import NavBar from "./NavBar";
 import './Form.css';
 
-// Helper to sanitize strings
 const sanitizeString = (str) => typeof str === "string" ? str.replace(/[$.]/g, "").trim() : str;
 
 export default function EmployeePaymentHistory() {
@@ -38,7 +37,7 @@ export default function EmployeePaymentHistory() {
           amount: Number(p.amount),
           paymentMethod: sanitizeString(p.paymentMethod),
           status: sanitizeString(p.status),
-          updatedAt: new Date(p.updatedAt).toLocaleString(), // formatted timestamp
+          updatedAt: new Date(p.updatedAt).toLocaleString(),
           user: p.userId ? { email: p.userId.email, username: p.userId.username } : null
         }));
 
@@ -55,43 +54,45 @@ export default function EmployeePaymentHistory() {
   }, [navigate]);
 
   return (
-    <div className="full-page">
+    <>
       <NavBar />
-      <div className="payments-container">
-        <h2>Payment History</h2>
-        {error && <p className="error-msg">{error}</p>}
+      <div className="page-content">
+        <div className="payments-container">
+          <h2>Payment History</h2>
+          {error && <p className="error-msg">{error}</p>}
 
-        {loading ? (
-          <p>Loading payment history...</p>
-        ) : payments.length === 0 ? (
-          <p>No approved or denied payments found.</p>
-        ) : (
-          <table className="payments-table">
-            <thead>
-              <tr>
-                <th>Customer Name</th>
-                <th>Amount (R)</th>
-                <th>Payment Method</th>
-                <th>Status</th>
-                <th>Updated At</th>
-                <th>User</th>
-              </tr>
-            </thead>
-            <tbody>
-              {payments.map((p) => (
-                <tr key={p._id}>
-                  <td>{p.customerName}</td>
-                  <td>{`R ${p.amount.toFixed(2)}`}</td>
-                  <td>{p.paymentMethod}</td>
-                  <td>{p.status}</td>
-                  <td>{p.updatedAt}</td>
-                  <td>{p.user ? `${p.user.username} (${p.user.email})` : "N/A"}</td>
+          {loading ? (
+            <p>Loading payment history...</p>
+          ) : payments.length === 0 ? (
+            <p>No approved or denied payments found.</p>
+          ) : (
+            <table className="payments-table">
+              <thead>
+                <tr>
+                  <th>Customer Name</th>
+                  <th>Amount (R)</th>
+                  <th>Payment Method</th>
+                  <th>Status</th>
+                  <th>Updated At</th>
+                  <th>User</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {payments.map((p) => (
+                  <tr key={p._id}>
+                    <td>{p.customerName}</td>
+                    <td>{`R ${p.amount.toFixed(2)}`}</td>
+                    <td>{p.paymentMethod}</td>
+                    <td>{p.status}</td>
+                    <td>{p.updatedAt}</td>
+                    <td>{p.user ? `${p.user.username} (${p.user.email})` : "N/A"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
