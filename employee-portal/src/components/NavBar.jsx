@@ -1,53 +1,50 @@
-
-import { Link } from "react-router-dom";
+// src/components/NavBar.jsx
+import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import './Nav.css';
 
 export default function NavBar() {
   const [role, setRole] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
-  const [username, setUsername] = useState("");
+
+  const location = useLocation();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     const savedRole = localStorage.getItem("role");
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
 
     setLoggedIn(!!token);
     setRole(savedRole);
-    setUsername(user.username || "");
-  }, []);
+  }, [location]); // re-check role on route change
 
   return (
     <header className="site-header">
-      <div className="logo">
-        {role === "Admin" ? "Admin Portal" : "Employee Portal"}
-      </div>
+      <div className="logo">MyPaymentsApp</div>
       <nav>
-        {!loggedIn && (
-          <Link to="/login" className="nav-link">Login</Link>
+        {/* Always show Login/Logout on login page */}
+        {location.pathname === "/login" && (
+          <>
+            <Link to="/login" className="nav-link">Login</Link>
+            {loggedIn && <Link to="/logout" className="nav-link logout">Logout</Link>}
+          </>
         )}
 
-        {loggedIn && role === "Employee" && (
+        {/* Employee Links */}
+        {loggedIn && role === "employee" && location.pathname !== "/login" && (
           <>
-            <Link to="/employee/pending" className="nav-link">Pending Payments</Link>
+            <Link to="/employee/dashboard" className="nav-link">Employee Dashboard</Link>
+            <Link to="/employee/pending" className="nav-link">Pending Approvals</Link>
             <Link to="/employee/history" className="nav-link">Payment History</Link>
+            <Link to="/logout" className="nav-link logout">Logout</Link>
           </>
         )}
 
-        {loggedIn && role === "Admin" && (
+        {/* Admin Links */}
+        {loggedIn && role === "admin" && location.pathname !== "/login" && (
           <>
-            <Link to="/admin/dashboard" className="nav-link">Dashboard</Link>
-            <Link to="/admin/employees" className="nav-link">Manage Employees</Link>
+            <Link to="/admin/dashboard" className="nav-link">Admin Dashboard</Link>
+            <Link to="/admin/employees" className="nav-link">Employee List</Link>
             <Link to="/admin/employees/create" className="nav-link">Create Employee</Link>
-          </>
-        )}
-
-        {loggedIn && (
-          <>
-            <span className="nav-link" style={{ color: '#ccc', cursor: 'default' }}>
-              {username}
-            </span>
             <Link to="/logout" className="nav-link logout">Logout</Link>
           </>
         )}

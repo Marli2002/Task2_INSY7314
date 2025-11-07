@@ -1,6 +1,6 @@
 import { hasRole } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
-import NavBar from './NavBar';
+
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -9,7 +9,7 @@ export default function AdminDashboard() {
 
   return (
     <div style={{ width: '100%', minHeight: '100vh' }}>
-      <NavBar />
+     
       <div style={{ 
         padding: '40px 20px', 
         maxWidth: '1200px', 

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import NavBar from "./NavBar";
 import './Form.css';
 import './Page.css';
 
@@ -96,8 +95,7 @@ export default function CreateEmployee() {
   };
 
   return (
-    <>
-      <NavBar />
+   
       <div className="full-page">
         <div className="form-container">
           <h2>Create New Employee</h2>
@@ -159,7 +157,7 @@ export default function CreateEmployee() {
           </button>
         </div>
       </div>
-    </>
+    
   );
 }
 

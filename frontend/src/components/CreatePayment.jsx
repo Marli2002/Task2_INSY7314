@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { sanitizeInput, sanitizeAmount, sanitizePaymentMethod } from "../utils/sanitize";
 import './Page.css';
+import NavBar from "../components/NavBar";
 
 // Create Payment Component
 export default function CreatePayment() {
@@ -69,41 +70,48 @@ export default function CreatePayment() {
   };
 
   return (
-    <main className="page full-page">
-      <section className="content-section form-section">
-        <h1>Create Payment</h1>
-        {error && <p className="error-msg">{error}</p>}
-        <form onSubmit={handleSubmit} className="classic-form">
-          <label>Customer Name</label>
-          <input type="text" value={customerName} onChange={e => setCustomerName(e.target.value)} required placeholder="John Doe" />
+      <main className="page full-page">
+        <section className="content-section form-section">
+          <h1>Create Payment</h1>
+          {error && <p className="error-msg">{error}</p>}
+          <form onSubmit={handleSubmit} className="classic-form">
+            <label>Customer Name</label>
+            <input
+              type="text"
+              value={customerName}
+              onChange={e => setCustomerName(e.target.value)}
+              required
+              placeholder="John Doe"
+            />
 
-          <label>Amount (ZAR)</label>
-          <input type="number" value={amount} onChange={e => setAmount(e.target.value)} required placeholder="100" min="0.01" step="0.01" />
+            <label>Amount (ZAR)</label>
+            <input
+              type="number"
+              value={amount}
+              onChange={e => setAmount(e.target.value)}
+              required
+              placeholder="100"
+              min="0.01"
+              step="0.01"
+            />
 
-          <label>Payment Method</label>
-          <select value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)}>
-            <option value="card">Card</option>
-            <option value="bank">Bank</option>
-            <option value="cash">Cash</option>
-            <option value="paypal">PayPal</option>
-          </select>
+            <label>Payment Method</label>
+            <select value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)}>
+              <option value="card">Card</option>
+              <option value="bank">Bank</option>
+              <option value="cash">Cash</option>
+              <option value="paypal">PayPal</option>
+            </select>
 
-          <button type="submit" disabled={loading}>{loading ? "Creating..." : "Create Payment"}</button>
-        </form>
-        <button className="secondary-btn" onClick={() => navigate("/payments")}>View Payments</button>
-      </section>
-    </main>
+            <button type="submit" disabled={loading}>
+              {loading ? "Creating..." : "Create Payment"}
+            </button>
+          </form>
+
+          <button className="secondary-btn" onClick={() => navigate("/payments")}>
+            View Payments
+          </button>
+        </section>
+      </main>
   );
 }
-
-/*
-References
-
-Axios. n.d. Axios API documentation. Retrieved October 10, 2025, from https://axios-http.com/docs/api_intro
-
-Mozilla Developer Network (MDN). n.d. Using the Web Storage API. Retrieved October 10, 2025, from https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
-
-Mozilla Developer Network (MDN). n.d. Using the Fetch API. Retrieved October 10, 2025, from https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-
-React. n.d. Components – React documentation. Retrieved October 10, 2025, from https://react.dev/reference/react-dom/components
-*/

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { sanitizeEmail } from "../utils/sanitize";
 import './Form.css';
+import NavBar from "../components/NavBar";
 
 // Login Form Component - USER PORTAL ONLY
 export default function LoginForm() {
@@ -12,6 +13,7 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -66,6 +68,7 @@ export default function LoginForm() {
   };
 
   return (
+    
     <div className="full-page">
       <div className="form-container">
         <h2>Customer Login</h2>

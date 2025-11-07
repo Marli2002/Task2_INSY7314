@@ -56,7 +56,8 @@ export default function RegisterForm() {
     }
   };
 
-  return (
+ return (
+
     <div className="full-page">
       <div className="form-container">
         <h2>Register</h2>

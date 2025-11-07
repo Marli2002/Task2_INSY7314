@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import NavBar from "./NavBar";
 import './Form.css';
 
 const sanitizeString = (str) => typeof str === "string" ? str.replace(/[$.]/g, "").trim() : str;
@@ -54,8 +53,6 @@ export default function EmployeePaymentHistory() {
   }, [navigate]);
 
   return (
-    <>
-      <NavBar />
       <div className="page-content">
         <div className="payments-container">
           <h2>Payment History</h2>
@@ -93,6 +90,6 @@ export default function EmployeePaymentHistory() {
           )}
         </div>
       </div>
-    </>
+    
   );
 }

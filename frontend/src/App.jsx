@@ -7,6 +7,10 @@ import PaymentsList from "./components/PaymentsList.jsx";
 import CreatePayment from "./components/CreatePayment.jsx";
 
 function App() {
+
+  const token = localStorage.getItem("token");
+  const isLoggedIn = !!token;
+
   return (
     <Router>
       <NavBar />
