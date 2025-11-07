@@ -12,6 +12,8 @@ Part 3 extends the system with an **Employee & Admin Portal**, full **Docker Com
 | Marli van Zyl | ST10320126 | Backend / DevSecOps |
 | Michke van der Merwe | ST10057020 | Documentation / Testing / Compliance |
 
+## 🎥 Demonstration Video
+🎬 Video Walkthrough: 
 
 ## 🧠 Overview
 
@@ -86,18 +88,42 @@ All services communicate securely via **HTTPS (SSL)**, share a **MongoDB** backe
 - `PaymentsList.jsx` → View Payments
 - `CreatePayment.jsx` → Add Payment
 
+**📁 Folder:** `/employee-portal`
 
-## 🔐 Security Features Summary
+**Key Features**
+- Built with React + Vite.
+- Separate portal for staff operations over HTTPS.
+- Role-based UI rendering (employee vs admin features).
+- Real-time payment status updates.
+- Secure authentication with JWT tokens.
 
-| Feature             | Description                                           |
-|--------------------|-------------------------------------------------------|
-| Password Hashing    | Passwords are salted + hashed with bcrypt.           |
-| JWT Authentication  | Secure token-based authentication between client and server. |
-| HTTPS Communication | Both frontend and backend are served over SSL.       |
-| Input Validation    | Regex-based whitelisting prevents invalid data.      |
-| Injection Protection| Inputs sanitized to block NoSQL/SQL injection attempts. |
-| Helmet Middleware   | Adds HTTP headers for extra security.                |
-| CORS Configuration  | Restricts API access to the frontend origin only.    |
+**Employee Example Pages**
+- `EmployeeLogin.jsx` → Staff authentication
+- `PendingPayments.jsx` → View all pending payments
+- `PaymentApproval.jsx` → Approve or deny individual payments
+- `PaymentHistory.jsx` → View approved/denied payment history
+
+**Admin Example Pages**
+- `AdminDashboard.jsx` → Admin control panel
+- `EmployeeList.jsx` → View all employees
+- `CreateEmployee.jsx` → Create new employee accounts
+- `DeleteEmployee.jsx` → Remove employee access
+
+## 🔐 Security Overview
+
+This project implements multiple layers of **defensive security** to mitigate common attacks identified in **Part 1** of our POE.
+
+| Threat | Protection Implemented | Description |
+|--------|------------------------|--------------|
+| **SQL/NoSQL Injection** | `express-mongo-sanitize` + Regex | Strips `$` and `.` from queries to prevent malicious payloads. |
+| **Cross-Site Scripting (XSS)** | `xss-clean` + Sanitization | Escapes and filters user input. |
+| **Brute Force Login** | `express-rate-limit` | Limits failed login attempts per IP. |
+| **Weak Passwords** | `bcrypt` (salt rounds = 10) + regex validation | Enforces strong password policy per NIST guidelines. |
+| **Session Hijacking** | JWT Blacklisting + Secure Cookies | Tokens invalidated upon logout, no reuse possible. |
+| **Data Interception** | HTTPS (SSL/TLS) on all portals | Encrypts all network traffic. |
+| **Security Headers** | Helmet.js | Adds CSP, X-Frame, and HSTS headers. |
+| **Cross-Origin Access** | Strict CORS policy | Only trusted origins permitted. |
+
 
 
 ## 🧰 DevSecOps Pipeline
@@ -184,10 +210,43 @@ After each push, the pipeline triggers a SonarCloud scan that reports:
 - ✅ Reliability = A
 - ✅ Security ≥ B
 
-### 🏁 Conclusion
+### 🔄 Changelog (Part 2 → Part 3)
+|Change|Description|
+|------|-----------|
+|New Employee/Admin Portal|Added secure portal for staff with role-based access.|
+|Full Dockerization|All services containerized and orchestrated using docker-compose.yml.|
+|HTTPS Everywhere |Implemented SSL certificates for backend and both frontends.
+|DevSecOps Integration|Added CircleCI + SonarCloud for automated builds and scans.
+|Regex & Sanitization Enhancements|Strengthened regex validation for usernames, emails, and payment data.|
+|UI Consistency| Unified color scheme and styling across all portals.|
+
+## 🏁 Conclusion
 This project demonstrates:
 
   - Full-stack development with React, Node.js, and MongoDB.
   - Strong security implementation using best practices for hashing, HTTPS, and    input sanitization.
   - Integration of a DevSecOps pipeline using CircleCI, SonarCloud, and Docker,  ensuring continuous delivery and automated security scanning.
 
+## 🧠 References
+
+#### Backend / Security
+
+- Express.js. (n.d.). Express Documentation. Retrieved November 2025, from https://expressjs.com
+- bcryptjs. (n.d.). bcryptjs GitHub Repository. Retrieved November 2025, from https://github.com/dcodeIO/bcrypt.js
+- Mozilla Developer Network (MDN). (n.d.). HTTP Headers – Helmet and HSTS. Retrieved November 2025, from https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers
+
+#### Frontend
+
+- Axios. (n.d.). Axios API Documentation. Retrieved November 2025, from https://axios-http.com/docs/api_intro
+- React. (n.d.). React Official Documentation. Retrieved November 2025, from https://react.dev
+- Mozilla Developer Network (MDN). (n.d.). Web Storage API. Retrieved November 2025, from https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
+
+#### DevSecOps / Docker
+
+- Docker. (n.d.). Docker Documentation. Retrieved November 2025, from https://docs.docker.com
+- CircleCI. (n.d.). CircleCI Configuration Reference. Retrieved November 2025, from https://circleci.com/docs
+- SonarCloud. (n.d.). Analyzing Projects with SonarCloud. Retrieved November 2025, from https://sonarcloud.io
+
+#### CSS / Styling
+
+- Mozilla Developer Network (MDN). (n.d.). CSS: Cascading Style Sheets. Retrieved November 2025, from https://developer.mozilla.org/en-US/docs/Web/CSS
