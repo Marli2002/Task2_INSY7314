@@ -190,8 +190,7 @@ jobs:
               -Dsonar.javascript.lcov.reportPaths=backend/coverage/lcov.info \
               -Dsonar.exclusions=backend/tests/**,frontend/tests/**,employee-portal/tests/**,**/node_modules/**,**/build/** \
               -Dsonar.test.inclusions=backend/tests/** \
-              -Dsonar.branch.name=$CIRCLE_BRANCH \
-              -Dsonar.branch.target=main
+             
 
 
 workflows:
