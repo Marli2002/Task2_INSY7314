@@ -1,5 +1,6 @@
 version: 2.1
 
+
 jobs:
   backend-build:
     docker:
@@ -73,7 +74,7 @@ jobs:
           paths:
             - frontend
 
-
+  # employee portal
   employee-portal-build:
     docker:
       - image: cimg/node:20.0
@@ -107,7 +108,7 @@ jobs:
           paths:
             - employee-portal
 
-
+  # docker build job
   docker-build:
     docker:
       - image: cimg/base:stable
@@ -165,7 +166,7 @@ jobs:
           name: List built Docker images
           command: docker images
 
-
+  # SonarQube analysis job
   sonarqube:
     working_directory: ~/build
     docker:
